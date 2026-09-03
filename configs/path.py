@@ -1,0 +1,10 @@
+from pathlib import Path
+from configs.settings import *
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+#DATAINGESTION
+
+DATA_DIR_PATH :str=PROJECT_ROOT/DATA_DIR_NAME
+RAW_DIR_PATH :str=DATA_DIR_PATH/RAW_DATA_DIR_NAME
+RAW_DATA_FILE_PATH :str=DATA_DIR_PATH/RAW_DIR_PATH/RAW_DATA_DIR_FILE_NAME
