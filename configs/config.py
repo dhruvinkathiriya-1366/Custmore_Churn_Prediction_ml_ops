@@ -9,6 +9,9 @@ class ConfigurationManager:
             DataIngestionConfig(
             DATA_DIR=DATA_DIR_PATH,
             RAW_DATA_DIR=RAW_DIR_PATH,
-            RAW_DATA_FILE=RAW_DATA_FILE_PATH 
+            RAW_DATA_FILE=RAW_DATA_FILE_PATH,
+            TRAIN_TEST_DIR=TRAIN_TEST_DIR_PATH,
+            TRAIN_FILE=TRAIN_FILE_PATH,
+            TEST_FILE=TEST_FILE_PATH,
         )
             )

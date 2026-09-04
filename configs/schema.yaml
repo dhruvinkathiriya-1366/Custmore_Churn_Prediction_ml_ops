@@ -1,0 +1,101 @@
+columns:
+  CustomerID:
+    type: object
+  Gender:
+    type: object
+  Age:
+    type: int64
+  Under30:
+    type: object
+  SeniorCitizen:
+    type: object
+  Married:
+    type: object
+  Dependents:
+    type: object
+  NumberofDependents:
+    type: int64
+  Country:
+    type: object
+  State:
+    type: object
+  City:
+    type: object
+  ZipCode:
+    type: int64
+  Latitude:
+    type: float64
+  Longitude:
+    type: float64
+  Population:
+    type: int64
+  Quarter:
+    type: object
+  ReferredaFriend:
+    type: object
+  Number_of_Referrals:
+    type: int64
+  TenureinMonths:
+    type: int64
+  Offer:
+    type: object
+  PhoneService:
+    type: object
+  AvgMonthlyLongDistanceCharges:
+    type: float64
+  MultipleLines:
+    type: object
+  InternetService:
+    type: object
+  InternetType:
+    type: object
+  AvgMonthlyGBDownload:
+    type: int64
+  OnlineSecurity:
+    type: object
+  OnlineBackup:
+    type: object
+  DeviceProtectionPlan:
+    type: object
+  PremiumTechSupport:
+    type: object
+  StreamingTV:
+    type: object
+  StreamingMovies:
+    type: object
+  StreamingMusic:
+    type: object
+  UnlimitedData:
+    type: object
+  Contract:
+    type: object
+  PaperlessBilling:
+    type: object
+  PaymentMethod:
+    type: object
+  MonthlyCharge:
+    type: float64
+  TotalCharges:
+    type: float64
+  TotalRefunds:
+    type: float64
+  TotalExtraDataCharges:
+    type: int64
+  TotalLongDistanceCharges:
+    type: float64
+  TotalRevenue:
+    type: float64
+  SatisfactionScore:
+    type: int64
+  CustomerStatus:
+    type: object
+  ChurnLabel:
+    type: object
+  ChurnScore:
+    type: int64
+  CLTV:
+    type: int64
+  ChurnCategory:
+    type: object
+  ChurnReason:
+    type: object
