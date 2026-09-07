@@ -2,3 +2,5 @@
 /.vehical
 /.env
 /Notebooks
+/data
+/logs

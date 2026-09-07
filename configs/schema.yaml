@@ -1,101 +1,262 @@
 columns:
   CustomerID:
     type: object
+    nullable: false
+    unique: true
   Gender:
     type: object
+    nullable: false
+    allowed_values:
+    - Female
+    - Male
   Age:
     type: int64
+    nullable: false
+    min_value: 0
   Under30:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   SeniorCitizen:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   Married:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   Dependents:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   NumberofDependents:
     type: int64
+    nullable: false
+    min_value: 0
   Country:
     type: object
+    nullable: false
+    allowed_values:
+    - United States
   State:
     type: object
+    nullable: false
+    allowed_values:
+    - California
   City:
     type: object
+    nullable: false
   ZipCode:
     type: int64
+    nullable: false
+    min_value: 0
   Latitude:
     type: float64
+    nullable: false
+    min_value: 0.0
   Longitude:
     type: float64
+    nullable: false
+    min_value: 0.0
   Population:
     type: int64
+    nullable: false
+    min_value: 0
   Quarter:
     type: object
+    nullable: false
+    allowed_values:
+    - Q3
   ReferredaFriend:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   Number_of_Referrals:
     type: int64
+    nullable: false
+    min_value: 0
   TenureinMonths:
     type: int64
+    nullable: false
+    min_value: 0
   Offer:
     type: object
+    nullable: true
+    allowed_values:
+    - Offer E
+    - Offer B
+    - Offer C
+    - Offer D
+    - Offer A
   PhoneService:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   AvgMonthlyLongDistanceCharges:
     type: float64
+    nullable: false
+    min_value: 0.0
   MultipleLines:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   InternetService:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   InternetType:
     type: object
+    nullable: true
+    allowed_values:
+    - Fiber Optic
+    - Cable
+    - DSL
   AvgMonthlyGBDownload:
     type: int64
+    nullable: false
+    min_value: 0
   OnlineSecurity:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   OnlineBackup:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   DeviceProtectionPlan:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   PremiumTechSupport:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   StreamingTV:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   StreamingMovies:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   StreamingMusic:
     type: object
+    nullable: false
+    allowed_values:
+    - 'No'
+    - 'Yes'
   UnlimitedData:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   Contract:
     type: object
+    nullable: false
+    allowed_values:
+    - Month-to-Month
+    - One Year
+    - Two Year
   PaperlessBilling:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   PaymentMethod:
     type: object
+    nullable: false
+    allowed_values:
+    - Bank Withdrawal
+    - Credit Card
+    - Mailed Check
   MonthlyCharge:
     type: float64
+    nullable: false
+    min_value: 0.0
   TotalCharges:
     type: float64
+    nullable: false
+    min_value: 0.0
   TotalRefunds:
     type: float64
+    nullable: false
+    min_value: 0.0
   TotalExtraDataCharges:
     type: int64
+    nullable: false
+    min_value: 0
   TotalLongDistanceCharges:
     type: float64
+    nullable: false
+    min_value: 0.0
   TotalRevenue:
     type: float64
+    nullable: false
+    min_value: 0.0
   SatisfactionScore:
     type: int64
+    nullable: false
+    min_value: 0
   CustomerStatus:
     type: object
+    nullable: false
+    allowed_values:
+    - Churned
+    - Stayed
+    - Joined
   ChurnLabel:
     type: object
+    nullable: false
+    allowed_values:
+    - 'Yes'
+    - 'No'
   ChurnScore:
     type: int64
+    nullable: false
+    min_value: 0
   CLTV:
     type: int64
+    nullable: false
+    min_value: 0
   ChurnCategory:
     type: object
+    nullable: true
+    allowed_values:
+    - Dissatisfaction
+    - Competitor
+    - Attitude
+    - Price
+    - Other
   ChurnReason:
     type: object
+    nullable: true

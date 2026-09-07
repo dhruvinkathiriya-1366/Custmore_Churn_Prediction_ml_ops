@@ -5,7 +5,6 @@ from src.logger import logger
 from src.exception import MyException
 from sklearn.model_selection import train_test_split
 from src.entity.artifact_entity import DataIngestionArtifact
-import pathlib
 import sys
 
 class DataIngestion:
@@ -59,11 +58,12 @@ class DataIngestion:
             test_df.to_csv(self.config.TEST_FILE,index=False)       
             logger.info("data is ingested")
             
-            return DataIngestionArtifact(
+            data_ingestion_artifacts=DataIngestionArtifact(
                    RAW_DATA_FILE=self.config.RAW_DATA_FILE,
                    TRAIN_FILE=self.config.TRAIN_FILE,
                    TEST_FILE=self.config.TEST_FILE
                    )
+            return data_ingestion_artifacts
 
         except Exception as e:
             raise MyException(e,sys)

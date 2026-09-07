@@ -9,3 +9,8 @@ class DataIngestionConfig:
     TRAIN_TEST_DIR:Path
     TRAIN_FILE:Path
     TEST_FILE:Path
+    
+@dataclass
+class DataValidationConfig:
+    REPORTS_DIR:Path
+    REPORTS_VALIDATION_FILE:Path

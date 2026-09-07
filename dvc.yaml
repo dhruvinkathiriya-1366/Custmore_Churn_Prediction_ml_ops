@@ -1,0 +1,36 @@
+stages:
+
+  data_ingestion:
+
+    cmd: python src/components/data_ingestion.py
+
+    deps:
+      - src/components/data_ingestion.py
+      - configs/config.py
+      - configs/mongo_configuration.py
+      - configs/settings.py
+      - src/entity/config_entity.py
+      - src/entity/artifact_entity.py
+
+    outs:
+      - data/raw/raw.csv
+      - data/feature/train.csv
+      - data/feature/test.csv
+  
+  # ...existing code...
+
+  data_validation:
+    cmd: python src/components/data_validation.py
+
+    deps:
+      - src/components/data_validation.py
+      - data/feature/train.csv
+      - data/feature/test.csv
+      - configs/schema.yaml
+      - configs/config.py
+      - configs/settings.py
+      - src/entity/artifact_entity.py
+      - src/utils/common.py
+
+    outs:
+      - artifacts/reports/validation.json

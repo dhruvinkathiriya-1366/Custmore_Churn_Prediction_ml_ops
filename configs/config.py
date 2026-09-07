@@ -15,3 +15,12 @@ class ConfigurationManager:
             TEST_FILE=TEST_FILE_PATH,
         )
             )
+        
+    def get_data_validation_config(self):
+        
+        return(
+            DataValidationConfig(
+                REPORTS_DIR=REPOTRS_DIR_PATH,
+                REPORTS_VALIDATION_FILE=REPORTS_VALIDATION_FILE_PATH
+            )
+        )

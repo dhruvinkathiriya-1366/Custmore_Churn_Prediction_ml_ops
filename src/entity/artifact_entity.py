@@ -8,3 +8,11 @@ class DataIngestionArtifact:
     RAW_DATA_FILE: Path
     TRAIN_FILE: Path
     TEST_FILE: Path
+
+@dataclass
+class DataValidationArtifact:
+    
+    TRAIN_STATUS:bool
+    TEST_STATUS:bool
+    
+    
