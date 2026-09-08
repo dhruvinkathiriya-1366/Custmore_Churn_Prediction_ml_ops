@@ -1,4 +1,5 @@
 
+ARTIFACTS_DIR_NAME="artifacts"
 #mongo_db
 
 DATABASE_NAME="proj1"
@@ -13,7 +14,6 @@ TRAIN_TEST_DIR_NAME="feature"
 TRAIN_FILE_NAME="train.csv"
 TEST_FILE_NAME="test.csv"
 TEST_SPLIT_RATIO=0.2
-ARTIFACTS="artifacts"
 
 
 #data_validation
@@ -21,3 +21,9 @@ ARTIFACTS="artifacts"
 REPOTRS_DIR_NAME="reports"
 REPORTS_VALIDATION_FILE_NAME="validation.json"
 SCHEMA_FILE_PATH="configs/schema.yaml"
+
+#data_preprocessing
+
+PREPROCCESSED_DIR_NAME="preprocessed"
+PREPROCCESSED_TRAIN_FILE_NAME="train.csv"
+PREPROCCESSED_TEST_FILE_NAME="test.csv"

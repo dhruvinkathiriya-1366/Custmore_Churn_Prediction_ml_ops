@@ -24,3 +24,12 @@ class ConfigurationManager:
                 REPORTS_VALIDATION_FILE=REPORTS_VALIDATION_FILE_PATH
             )
         )
+        
+    def get_data_preproccessing_config(self):
+        return (
+            DataPreproccessing(
+                PREPROCCESSED_DIR=PREPROCCESSED_DIR_PATH,
+                PREPROCCESSED_TEST_FILE=PREPROCCESSED_TEST_FILE_PATH,
+                PREPROCCESSED_TRAIN_FILE=PREPROCCESSED_TRAIN_FILE_PATH
+            )
+        )

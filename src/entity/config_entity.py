@@ -14,3 +14,9 @@ class DataIngestionConfig:
 class DataValidationConfig:
     REPORTS_DIR:Path
     REPORTS_VALIDATION_FILE:Path
+
+@dataclass
+class DataPreproccessing:
+  PREPROCCESSED_DIR :Path
+  PREPROCCESSED_TEST_FILE :Path
+  PREPROCCESSED_TRAIN_FILE :Path
