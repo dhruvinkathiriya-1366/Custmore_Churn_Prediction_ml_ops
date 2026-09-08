@@ -34,3 +34,17 @@ stages:
 
     outs:
       - artifacts/reports/validation.json
+  
+  data_preproccessing:
+    cmd: python src/components/data_preproccess.py
+
+    deps:
+     - src/components/data_preproccess.py
+     - configs/config.py
+     - configs/settings.py
+     - src/utils/common.py
+
+    outs:
+     - data/preproccessed/train.csv
+     - data/preproccessed/test.csv
+    

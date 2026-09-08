@@ -24,6 +24,8 @@ SCHEMA_FILE_PATH="configs/schema.yaml"
 
 #data_preprocessing
 
-PREPROCCESSED_DIR_NAME="preprocessed"
+PREPROCCESSED_DIR_NAME="preproccessed"
 PREPROCCESSED_TRAIN_FILE_NAME="train.csv"
 PREPROCCESSED_TEST_FILE_NAME="test.csv"
+  #clean_data:
+DROP_COLUMN=['ZipCode','City','Quarter','State','Country','CustomerID','ChurnScore','ChurnCategory','ChurnReason','CLTV','CustomerStatus','Dependents','ReferredaFriend','InternetService']

@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from src.exception import MyException
 import pandas as pd
+from pandas import DataFrame
 
 def create_dir(path:Path):
     
@@ -67,4 +68,11 @@ def read_csv(path:Path):
         return pd.read_csv(path)
     except Exception as e:
         raise MyException(e,sys)        
+
+def load_csv(path:Path,df:DataFrame):
+    try:
+         df.to_csv(path,index=False)
+    
+    except Exception as e:
+        raise MyException(e,sys)
     
