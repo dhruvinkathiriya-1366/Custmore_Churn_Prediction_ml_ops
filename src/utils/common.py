@@ -1,6 +1,7 @@
 import yaml
 import json
 import sys
+import joblib
 from pathlib import Path
 from src.exception import MyException
 import pandas as pd
@@ -75,4 +76,9 @@ def load_csv(path:Path,df:DataFrame):
     
     except Exception as e:
         raise MyException(e,sys)
-    
+
+def dump_pkl(preproccessor,path):
+    try:
+        joblib.dump(preproccessor,path)
+    except Exception as e:
+        raise MyException(e,sys)

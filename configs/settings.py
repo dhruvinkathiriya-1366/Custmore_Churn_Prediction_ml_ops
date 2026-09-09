@@ -29,3 +29,11 @@ PREPROCCESSED_TRAIN_FILE_NAME="train.csv"
 PREPROCCESSED_TEST_FILE_NAME="test.csv"
   #clean_data:
 DROP_COLUMN=['ZipCode','City','Quarter','State','Country','CustomerID','ChurnScore','ChurnCategory','ChurnReason','CLTV','CustomerStatus','Dependents','ReferredaFriend','InternetService']
+
+#transform
+TRANSFORM_DATA_DIR_NAME="transform"
+TRANSFORM_TRAIN_FILE_NAME="train.csv"
+TRANSFORM_TEST_FILE_NAME="test.csv"
+PREPROCCESSOR_DIR_NAME="preproccessor"
+PREPROCCESSOR_FILE_NAME="preproccessor.pkl"
+NOT_SCALLNEED=['ZipCode','City','Quarter','State','Country','CustomerID','ChurnScore','ChurnCategory','ChurnReason','CLTV','CustomerStatus','Dependents','ReferredaFriend','InternetService']

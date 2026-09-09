@@ -33,3 +33,14 @@ class ConfigurationManager:
                 PREPROCCESSED_TRAIN_FILE=PREPROCCESSED_TRAIN_FILE_PATH
             )
         )
+    
+    def get_data_transform_config(self):
+        return(
+            DataTransformConfig(
+                    TRANSFORM_DATA_DIR=TRANSFORM_DATA_DIR_PATH,
+                    TRANSFORM_TEST_FILE=TRANSFORM_TEST_FILE_PATH, 
+                    TRANSFORM_TRAIN_FILE=TRANSFORM_TRAIN_FILE_PATH ,
+                    PREPROCCESSOR_DIR=PREPROCCESSOR_DIR_PATH,
+                    PREPROCCESSOR_FILE=PREPROCCESSOR_FILE_PATH
+            )
+        )

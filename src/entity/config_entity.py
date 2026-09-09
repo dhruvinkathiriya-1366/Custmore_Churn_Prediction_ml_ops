@@ -20,3 +20,11 @@ class DataPreproccessing:
   PREPROCCESSED_DIR :Path
   PREPROCCESSED_TEST_FILE :Path
   PREPROCCESSED_TRAIN_FILE :Path
+  
+@dataclass
+class DataTransformConfig:
+    TRANSFORM_DATA_DIR :Path
+    TRANSFORM_TEST_FILE :Path
+    TRANSFORM_TRAIN_FILE :Path
+    PREPROCCESSOR_DIR :Path
+    PREPROCCESSOR_FILE :Path

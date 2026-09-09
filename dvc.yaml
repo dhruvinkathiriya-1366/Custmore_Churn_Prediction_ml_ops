@@ -47,4 +47,19 @@ stages:
     outs:
      - data/preproccessed/train.csv
      - data/preproccessed/test.csv
+
+  data_transformation:
+     cmd: python src/components/data_transformation.py
+
+     deps:
+       - src/components/data_transformation.py
+       - configs/config.py
+       - configs/settings.py
+       - src/utils/common.py
+      
+     outs:
+       - artifacts/transform/train.csv
+       - artifacts/transform/test.csv
+       - artifacts/transform/preproccessor/preproccessor.pkl
+       
     
