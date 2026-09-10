@@ -28,3 +28,12 @@ class DataTransformConfig:
     TRANSFORM_TRAIN_FILE :Path
     PREPROCCESSOR_DIR :Path
     PREPROCCESSOR_FILE :Path
+    
+@dataclass
+class ModelTrainerConfig:
+    MODELS_DIR :Path
+    MODELS_FILE :Path
+    PREDICTION_DIR :Path
+    PREDICTION_TRAIN_FILE :Path
+    PREDICTION_TEST_FILE :Path
+    PARAMS_YAML_FILE :Path

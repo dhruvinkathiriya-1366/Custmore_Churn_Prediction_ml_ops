@@ -82,3 +82,10 @@ def dump_pkl(preproccessor,path):
         joblib.dump(preproccessor,path)
     except Exception as e:
         raise MyException(e,sys)
+    
+def load_pkl(path:Path):
+    try:
+        load_processor=joblib.load(path)
+        return load_processor
+    except Exception as e:
+        raise MyException(e,sys)       

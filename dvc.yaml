@@ -61,5 +61,25 @@ stages:
        - artifacts/transform/train.csv
        - artifacts/transform/test.csv
        - artifacts/transform/preproccessor/preproccessor.pkl
+
+  model_trainer:
+    cmd: python src/components/model_trainer.py
+
+    deps:
+      - src/components/model_trainer.py
+      - configs/config.py
+      - configs/settings.py
+      - src/entity/config_entity.py
+      - src/entity/artifact_entity.py
+      - src/utils/common.py
+      - artifacts/transform/train.csv
+      - artifacts/transform/test.csv
+      - artifacts/transform/preproccessor/preproccessor.pkl
+      - params.yaml
+
+    outs:
+      - artifacts/models/model.pkl
+      - artifacts/prediction/prediction_train.csv
+      - artifacts/prediction/prediction_test.csv
        
     

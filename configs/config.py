@@ -1,6 +1,8 @@
 from src.entity.config_entity import *
 from configs.path import *
 from configs.settings import *
+from src.utils.common import read_yaml
+
 
 class ConfigurationManager:
     def get_data_ingestion_config(self):
@@ -43,4 +45,16 @@ class ConfigurationManager:
                     PREPROCCESSOR_DIR=PREPROCCESSOR_DIR_PATH,
                     PREPROCCESSOR_FILE=PREPROCCESSOR_FILE_PATH
             )
+        )
+        
+    def get_model_trainer_config(self):
+        return(
+            ModelTrainerConfig(
+                MODELS_DIR=MODELS_DIR_PATH,
+                MODELS_FILE=MODELS_FILE_PATH,
+                PREDICTION_DIR=PREDICTION_DIR_PATH, 
+                PREDICTION_TRAIN_FILE=PREDICTION_TRAIN_FILE_PATH,
+                PREDICTION_TEST_FILE=PREDICTION_TEST_FILE_PATH,
+                PARAMS_YAML_FILE=PARAMS_YAML_FILE_PATH,
+            ) 
         )

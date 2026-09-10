@@ -5,3 +5,5 @@
 /data
 /logs
 /__pycache__
+/preproccessor
+/.pyc

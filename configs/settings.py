@@ -37,3 +37,11 @@ TRANSFORM_TEST_FILE_NAME="test.csv"
 PREPROCCESSOR_DIR_NAME="preproccessor"
 PREPROCCESSOR_FILE_NAME="preproccessor.pkl"
 NOT_SCALLNEED=['ZipCode','City','Quarter','State','Country','CustomerID','ChurnScore','ChurnCategory','ChurnReason','CLTV','CustomerStatus','Dependents','ReferredaFriend','InternetService']
+
+#model traning
+MODELS_DIR_NAME="models"
+MODELS_FILE_NAME="model.pkl"
+PREDICTION_DIR_NAME="prediction"
+PREDICTION_TRAIN_FILE_NAME="prediction_train.csv"
+PREDICTION_TEST_FILE_NAME="prediction_test.csv"
+PARAMS_YAML_FILE_NAME="params.yaml"
