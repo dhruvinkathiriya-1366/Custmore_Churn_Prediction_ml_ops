@@ -59,27 +59,49 @@ class DataTransform:
             except Exception as e:
                 raise MyException(e,sys)
             
-             
+    def split_x_y(self):
+            
+            try:
+                logger.info("read the transform data from the csv")
+                train_path=self.ingestion_config.TRAIN_FILE
+                test_path=self.ingestion_config.TEST_FILE
+                train_df=read_csv(train_path)
+                test_df=read_csv(test_path)
+                
+                x_train=train_df.drop(columns=['ChurnLabel'])
+                y_train=train_df['ChurnLabel'].map({
+                    'Yes':1,
+                    'No':0
+                    })
+                x_test=test_df.drop(columns=['ChurnLabel'])
+                y_test=test_df['ChurnLabel'].map({
+                                'Yes':1,
+                                'No':0
+                                })
+                logger.info("spit in to x and y successfully")
+                
+                return (x_train,y_train,x_test,y_test)
+            except Exception as e:
+                        raise MyException(e,sys)
+                          
     def intiate_data_transformation(self): 
             try: 
                 self.ingestion_config=self.manager.get_data_ingestion_config() 
                 self.train_path=self.ingestion_config.TRAIN_FILE 
                 self.test_path=self.ingestion_config.TEST_FILE 
-                self.train_df=read_csv(self.train_path) 
-                self.test_df=read_csv(self.test_path) 
+               
             
                 logger.info("fetch the column for the transfom the data") 
-            
-                trainordinal_col,trainnominal_col,trainrobust_col,trainstandard_col=self.fetch_column(self.train_df) 
-                testordinal_col,testnominal_col,testrobust_col,teststandard_col=self.fetch_column(self.test_df) 
+                x_train,y_train,x_test,y_test=self.split_x_y()
+                trainordinal_col,trainnominal_col,trainrobust_col,trainstandard_col=self.fetch_column(x_train)  
             
                 logger.info("fetch required column") 
                 logger.info("start the data_transformation") 
             
                 self.preproccessor=self.data_transform(trainordinal_col,trainnominal_col,trainrobust_col,trainstandard_col) 
-                self.preproccessor.fit(self.train_df) 
-                self.transform_train=self.preproccessor.transform(self.train_df) 
-                self.transform_test=self.preproccessor.transform(self.test_df) 
+                self.preproccessor.fit(x_train) 
+                self.transform_train=self.preproccessor.transform(x_train) 
+                self.transform_test=self.preproccessor.transform(x_test) 
             
                 if hasattr(self.transform_train, "toarray"): self.transform_train = self.transform_train.toarray() 
                 if hasattr(self.transform_test, "toarray"): self.transform_test = self.transform_test.toarray() 
