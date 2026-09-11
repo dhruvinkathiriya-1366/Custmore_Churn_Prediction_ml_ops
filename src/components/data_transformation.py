@@ -16,6 +16,8 @@ class DataTransform:
         try: 
             self.manager=ConfigurationManager() 
             self.config=self.manager.get_data_transform_config() 
+            self.ingestion_config=self.manager.get_data_ingestion_config()
+            self.preproc_config=self.manager.get_data_preproccessing_config()
             
         except Exception as e: raise MyException(e,sys) 
         
@@ -62,12 +64,12 @@ class DataTransform:
     def split_x_y(self):
             
             try:
-                logger.info("read the transform data from the csv")
-                train_path=self.ingestion_config.TRAIN_FILE
-                test_path=self.ingestion_config.TEST_FILE
+                logger.info("read the preprocessed data from the csv")
+                preproc_config=self.manager.get_data_preproccessing_config()
+                train_path=preproc_config.PREPROCCESSED_TRAIN_FILE
+                test_path=preproc_config.PREPROCCESSED_TEST_FILE
                 train_df=read_csv(train_path)
                 test_df=read_csv(test_path)
-                
                 x_train=train_df.drop(columns=['ChurnLabel'])
                 y_train=train_df['ChurnLabel'].map({
                     'Yes':1,
@@ -86,10 +88,8 @@ class DataTransform:
                           
     def intiate_data_transformation(self): 
             try: 
-                self.ingestion_config=self.manager.get_data_ingestion_config() 
-                self.train_path=self.ingestion_config.TRAIN_FILE 
-                self.test_path=self.ingestion_config.TEST_FILE 
-               
+                
+                
             
                 logger.info("fetch the column for the transfom the data") 
                 x_train,y_train,x_test,y_test=self.split_x_y()
@@ -113,6 +113,7 @@ class DataTransform:
                 self.config.TRANSFORM_DATA_DIR.mkdir(parents=True,exist_ok=True) 
                 load_csv(self.config.TRANSFORM_TRAIN_FILE,x_train_df) 
                 load_csv(self.config.TRANSFORM_TEST_FILE,x_test_df) 
+                load_csv(self.config.TRANSFORM_Y_TRAIN_FILE,y_train)
                 load_csv(self.config.TRANSFORM_Y_TEST_FILE,y_test)
                 self.config.PREPROCCESSOR_DIR.mkdir(parents=True,exist_ok=True)
                  

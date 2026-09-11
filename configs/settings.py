@@ -36,6 +36,7 @@ DROP_COLUMN=['ZipCode','City','Quarter','State','Country','CustomerID','ChurnSco
 TRANSFORM_DATA_DIR_NAME="transform"
 TRANSFORM_TRAIN_FILE_NAME="x_train.csv"
 TRANSFORM_TEST_FILE_NAME="x_test.csv"
+TRANSFORM_Y_TRAIN_FILE_NAME="y_train.csv"
 TRANSFORM_Y_TEST_FILE_NAME="y_test.csv"
 PREPROCCESSOR_DIR_NAME="preproccessor"
 PREPROCCESSOR_FILE_NAME="preproccessor.pkl"

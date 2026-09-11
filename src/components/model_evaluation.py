@@ -8,7 +8,6 @@ from src.exception import MyException
 class ModelEvaluation: 
    def __init__(self):
        manager=ConfigurationManager()
-       self.ingestion_config=manager.get_data_ingestion_config() 
        self.transform_config=manager.get_data_transform_config()
        self.model_trainer_config=manager.get_model_trainer_config()
        self.evaluation_config=manager.get_model_evauation_config()
@@ -29,8 +28,8 @@ class ModelEvaluation:
        
    def intialize_model_evaluation(self):
        try:
-            y_test=read_csv(self.ingestion_config.Y_TEST_FILE)
-            y_pred=read_csv(self.model_trainer_config.PREDICTION_TEST_FILE)
+            y_test=read_csv(self.transform_config.TRANSFORM_Y_TEST_FILE).squeeze()
+            y_pred=read_csv(self.model_trainer_config.PREDICTION_TEST_FILE).squeeze()
             
             logger.info("start the model evaluation")
             
@@ -49,7 +48,7 @@ class ModelEvaluation:
                 'F1_score':metrics['f1_score'],
             })
             write_json(self.evaluation_config.METRICS_FILE,data)
-            logger.info("complate the model evaluation")
+            logger.info("complete the model evaluation")
        except Exception as e:
            raise MyException(e,sys)
 

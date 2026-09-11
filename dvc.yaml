@@ -56,10 +56,14 @@ stages:
        - configs/config.py
        - configs/settings.py
        - src/utils/common.py
+       - data/preproccessed/train.csv
+       - data/preproccessed/test.csv
       
      outs:
        - artifacts/transform/x_train.csv
        - artifacts/transform/x_test.csv
+       - artifacts/transform/y_train.csv
+       - artifacts/transform/y_test.csv
        - artifacts/transform/preproccessor/preproccessor.pkl
 
   model_trainer:
@@ -74,8 +78,8 @@ stages:
       - src/utils/common.py
       - artifacts/transform/x_train.csv
       - artifacts/transform/x_test.csv
-      - artifacts/transform/preproccessor/preproccessor.pkl
-      - params.yaml
+      - artifacts/transform/y_train.csv
+      - artifacts/transform/y_test.csv
 
     outs:
       - artifacts/models/model.pkl
@@ -93,7 +97,6 @@ stages:
       - src/entity/artifact_entity.py
       - src/utils/common.py
       - artifacts/transform/y_test.csv
-      - artifacts/transform/y_train.csv
       - artifacts/prediction/prediction_train.csv
       - artifacts/prediction/prediction_test.csv
 

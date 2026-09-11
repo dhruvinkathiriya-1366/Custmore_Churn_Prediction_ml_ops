@@ -46,8 +46,8 @@ class Data_preproccessing:
             logger.info("complate the preproccessing")
             logger.info("save the preprocess train_df and test_df")
             self.config.PREPROCCESSED_DIR.mkdir(parents=True,exist_ok=True)
-            load_csv(self.config.PREPROCCESSED_TEST_FILE,self.test_df)
-            load_csv(self.config.PREPROCCESSED_TRAIN_FILE,self.test_df)
+            load_csv(self.config.PREPROCCESSED_TRAIN_FILE,self.clean_train_df)
+            load_csv(self.config.PREPROCCESSED_TEST_FILE,self.clean_test_df)
             logger.info("compalate the preproccessing")
         except Exception as e:
             raise MyException(e,sys)

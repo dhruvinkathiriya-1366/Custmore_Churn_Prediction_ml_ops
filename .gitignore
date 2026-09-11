@@ -8,3 +8,8 @@
 /preproccessor
 /transform
 /.pyc
+
+
+*.csv
+
+/artifacts

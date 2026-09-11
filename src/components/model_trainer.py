@@ -2,17 +2,14 @@ import sys
 from configs.config import ConfigurationManager
 from src.logger import logger
 from src.exception import MyException
-from src.utils.common import (read_csv,load_csv,dump_pkl,load_pkl,read_yaml)
+from src.utils.common import (read_csv,load_csv,dump_pkl)
 from sklearn.svm import SVC
-from sklearn.pipeline import Pipeline
 import pandas as pd
 
 class ModelTrainer:
     def __init__(self):
         try:
             self.manager=ConfigurationManager()
-            self.config=self.manager.get_model_trainer_config()
-            self.ingestion_config=self.manager.get_data_ingestion_config()
             self.model_trainer_config=self.manager.get_model_trainer_config()
             self.transform_config=self.manager.get_data_transform_config()
         
@@ -22,23 +19,18 @@ class ModelTrainer:
     def split_x_y(self):
         
         try:
-            logger.info("read the transform data from the csv")
-            train_path=self.ingestion_config.TRAIN_FILE
-            test_path=self.ingestion_config.TEST_FILE
-            train_df=read_csv(train_path)
-            test_df=read_csv(test_path)
+            logger.info("read the transformed data from the csv")
+            x_train_path=self.transform_config.TRANSFORM_TRAIN_FILE
+            x_test_path=self.transform_config.TRANSFORM_TEST_FILE
+            y_train_path=self.transform_config.TRANSFORM_Y_TRAIN_FILE
+            y_test_path=self.transform_config.TRANSFORM_Y_TEST_FILE
             
-            x_train=train_df.drop(columns=['ChurnLabel'])
-            y_train=train_df['ChurnLabel'].map({
-                'Yes':1,
-                'No':0
-                })
-            x_test=test_df.drop(columns=['ChurnLabel'])
-            y_test=test_df['ChurnLabel'].map({
-                            'Yes':1,
-                            'No':0
-                            })
-            logger.info("spit in to x and y successfully")
+            x_train=read_csv(x_train_path)
+            x_test=read_csv(x_test_path)
+            y_train=read_csv(y_train_path).squeeze()
+            y_test=read_csv(y_test_path).squeeze()
+            
+            logger.info("read x and y data successfully")
             
             return (x_train,y_train,x_test,y_test)
         
@@ -48,14 +40,12 @@ class ModelTrainer:
     def train_model(self):
         
         try:
-            logger.info("read params from the params.yaml")
-            self.params=read_yaml(self.model_trainer_config.PARAMS_YAML_FILE)
-            logger.info("intialize the model")
+            logger.info("initialize the model")
             model=SVC(
-                    class_weight=self.params["MODEL"]["class_weight"],
-                    kernel=self.params["MODEL"]["kernel"],
-                    C=self.params["MODEL"]["c"],
-                    gamma=self.params["MODEL"]["gamma"]
+                    class_weight='balanced',
+                    kernel='rbf',
+                    C=1,
+                    gamma=0.001
                     )
             return model
         except Exception as e:
@@ -66,24 +56,18 @@ class ModelTrainer:
             logger.info("split the train and test as x and y")
             x_train,y_train,x_test,y_test=self.split_x_y()
             logger.info("train the model with passing x and y train_data")
-            logger.info("load the processor.pkl file for transform new data")
-            preproccessor=load_pkl(self.transform_config.PREPROCCESSOR_FILE)
             model=self.train_model()
             
-            logger.info("sttart the model training.....")
-            model_pipeline=Pipeline([
-                ('transform',preproccessor),
-                ('model',model)
-            ])
-            model_pipeline.fit(x_train,y_train)
-            logger.info("trai model successfully")
+            logger.info("start the model training.....")
+            model.fit(x_train,y_train)
+            logger.info("train model successfully")
             logger.info("save the model .pkl file")
             self.model_trainer_config.MODELS_DIR.mkdir(parents=True,exist_ok=True)
-            dump_pkl(model_pipeline,self.model_trainer_config.MODELS_FILE)
+            dump_pkl(model,self.model_trainer_config.MODELS_FILE)
             
             logger.info("predict based on the test data")
-            test_pred=model_pipeline.predict(x_test)
-            train_pred=model_pipeline.predict(x_train)
+            test_pred=model.predict(x_test)
+            train_pred=model.predict(x_train)
             
             logger.info("save the prediction as csv")
             test_pred_df=pd.DataFrame(
@@ -98,7 +82,7 @@ class ModelTrainer:
             )
             load_csv(self.model_trainer_config.PREDICTION_TEST_FILE,test_pred_df)
             load_csv(self.model_trainer_config.PREDICTION_TRAIN_FILE,train_pred_df)
-            logger.info("complate the traning sestion of the model")
+            logger.info("complete the training session of the model")
         except Exception as e:
             raise MyException(e,sys)
          
