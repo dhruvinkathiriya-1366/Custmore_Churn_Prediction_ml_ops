@@ -5,28 +5,28 @@ stages:
     deps:
     - path: configs/config.py
       hash: md5
-      md5: f3928fda82026de4c5a1724816dcd0fd
-      size: 2065
+      md5: 3493074e5741d7b00e07e2a7f337462f
+      size: 2450
     - path: configs/mongo_configuration.py
       hash: md5
       md5: c530764dee7e47a0c2a0f34f29d8daf5
       size: 1276
     - path: configs/settings.py
       hash: md5
-      md5: 173ae8e533130bad54d7f9bca098e2f7
-      size: 1451
+      md5: 1dd1f166deb69914148fc81e6c2aecf8
+      size: 1645
     - path: src/components/data_ingestion.py
       hash: md5
-      md5: 5de14dbca39ff5da591fc0676688a548
-      size: 2763
+      md5: 84551b2bdcd7496af07adccf4180adb4
+      size: 3802
     - path: src/entity/artifact_entity.py
       hash: md5
       md5: 2720f82d5ff639fbb8c4f4be31433232
       size: 283
     - path: src/entity/config_entity.py
       hash: md5
-      md5: 5703089630c40d47260a12c4076a90bd
-      size: 877
+      md5: 04916400227ff520b98d5136a1bd6736
+      size: 1051
     outs:
     - path: data/feature/test.csv
       hash: md5
@@ -45,16 +45,16 @@ stages:
     deps:
     - path: configs/config.py
       hash: md5
-      md5: f3928fda82026de4c5a1724816dcd0fd
-      size: 2065
+      md5: 3493074e5741d7b00e07e2a7f337462f
+      size: 2450
     - path: configs/schema.yaml
       hash: md5
       md5: c18f7bfbcf91f6f0d7648b9ce2a38402
       size: 4664
     - path: configs/settings.py
       hash: md5
-      md5: 173ae8e533130bad54d7f9bca098e2f7
-      size: 1451
+      md5: 1dd1f166deb69914148fc81e6c2aecf8
+      size: 1645
     - path: data/feature/test.csv
       hash: md5
       md5: 12cd2348b09501a5b96c57f7aa7b653e
@@ -85,12 +85,12 @@ stages:
     deps:
     - path: configs/config.py
       hash: md5
-      md5: f3928fda82026de4c5a1724816dcd0fd
-      size: 2065
+      md5: 3493074e5741d7b00e07e2a7f337462f
+      size: 2450
     - path: configs/settings.py
       hash: md5
-      md5: 173ae8e533130bad54d7f9bca098e2f7
-      size: 1451
+      md5: 1dd1f166deb69914148fc81e6c2aecf8
+      size: 1645
     - path: src/components/data_preproccess.py
       hash: md5
       md5: 6d4adae7c3180a748d207e5879c2e361
@@ -113,16 +113,16 @@ stages:
     deps:
     - path: configs/config.py
       hash: md5
-      md5: f3928fda82026de4c5a1724816dcd0fd
-      size: 2065
+      md5: 3493074e5741d7b00e07e2a7f337462f
+      size: 2450
     - path: configs/settings.py
       hash: md5
-      md5: 173ae8e533130bad54d7f9bca098e2f7
-      size: 1451
+      md5: 1dd1f166deb69914148fc81e6c2aecf8
+      size: 1645
     - path: src/components/data_transformation.py
       hash: md5
-      md5: fe09412354cb40b3afa92e5874bdd177
-      size: 6456
+      md5: 06bd8e72f930c3209f0126bce8885a2e
+      size: 6532
     - path: src/utils/common.py
       hash: md5
       md5: bd84b5ee54603cd77dc07b71a95e7e2b
@@ -132,11 +132,11 @@ stages:
       hash: md5
       md5: 51e2ea4654bf993a9440c5a32a5a6178
       size: 200512
-    - path: artifacts/transform/test.csv
+    - path: artifacts/transform/x_test.csv
       hash: md5
       md5: e4949d56e86d485b49f13a69446b8388
       size: 6934609
-    - path: artifacts/transform/train.csv
+    - path: artifacts/transform/x_train.csv
       hash: md5
       md5: 41c0d1697c880e506033d900392ae328
       size: 27715376
@@ -147,22 +147,22 @@ stages:
       hash: md5
       md5: 51e2ea4654bf993a9440c5a32a5a6178
       size: 200512
-    - path: artifacts/transform/test.csv
+    - path: artifacts/transform/x_test.csv
       hash: md5
       md5: e4949d56e86d485b49f13a69446b8388
       size: 6934609
-    - path: artifacts/transform/train.csv
+    - path: artifacts/transform/x_train.csv
       hash: md5
       md5: 41c0d1697c880e506033d900392ae328
       size: 27715376
     - path: configs/config.py
       hash: md5
-      md5: f3928fda82026de4c5a1724816dcd0fd
-      size: 2065
+      md5: 3493074e5741d7b00e07e2a7f337462f
+      size: 2450
     - path: configs/settings.py
       hash: md5
-      md5: 173ae8e533130bad54d7f9bca098e2f7
-      size: 1451
+      md5: 1dd1f166deb69914148fc81e6c2aecf8
+      size: 1645
     - path: params.yaml
       hash: md5
       md5: 9498395b23585067e287e5e58ac9a0e5
@@ -177,8 +177,8 @@ stages:
       size: 283
     - path: src/entity/config_entity.py
       hash: md5
-      md5: 5703089630c40d47260a12c4076a90bd
-      size: 877
+      md5: 04916400227ff520b98d5136a1bd6736
+      size: 1051
     - path: src/utils/common.py
       hash: md5
       md5: bd84b5ee54603cd77dc07b71a95e7e2b
@@ -196,3 +196,51 @@ stages:
       hash: md5
       md5: f144a4e1dfdc31b469debe9513e560b1
       size: 16914
+  model_evaluation:
+    cmd: python src/components/model_evaluation.py
+    deps:
+    - path: artifacts/prediction/prediction_test.csv
+      hash: md5
+      md5: a6c203d9b567ce5444d3dfc6c14bcfcd
+      size: 4239
+    - path: artifacts/prediction/prediction_train.csv
+      hash: md5
+      md5: f144a4e1dfdc31b469debe9513e560b1
+      size: 16914
+    - path: artifacts/transform/y_test.csv
+      hash: md5
+      md5: c14ab5a148ba3b214cef3217701afccc
+      size: 4239
+    - path: artifacts/transform/y_train.csv
+      hash: md5
+      md5: c592a92a16f50258e215325a30a01e45
+      size: 16914
+    - path: configs/config.py
+      hash: md5
+      md5: 3493074e5741d7b00e07e2a7f337462f
+      size: 2450
+    - path: configs/settings.py
+      hash: md5
+      md5: 1dd1f166deb69914148fc81e6c2aecf8
+      size: 1645
+    - path: src/components/model_evaluation.py
+      hash: md5
+      md5: 6fa4a76ec7ca6db33d698f24b33a9b7a
+      size: 2468
+    - path: src/entity/artifact_entity.py
+      hash: md5
+      md5: 2720f82d5ff639fbb8c4f4be31433232
+      size: 283
+    - path: src/entity/config_entity.py
+      hash: md5
+      md5: 04916400227ff520b98d5136a1bd6736
+      size: 1051
+    - path: src/utils/common.py
+      hash: md5
+      md5: bd84b5ee54603cd77dc07b71a95e7e2b
+      size: 2045
+    outs:
+    - path: artifacts/metrics/metrics.json
+      hash: md5
+      md5: dd478dca610a0a8bbbae5ba083ed6ade
+      size: 129

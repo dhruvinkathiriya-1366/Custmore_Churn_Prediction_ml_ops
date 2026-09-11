@@ -105,14 +105,15 @@ class DataTransform:
             
                 if hasattr(self.transform_train, "toarray"): self.transform_train = self.transform_train.toarray() 
                 if hasattr(self.transform_test, "toarray"): self.transform_test = self.transform_test.toarray() 
-                train_df = pd.DataFrame(self.transform_train) 
-                test_df = pd.DataFrame(self.transform_test)
+                x_train_df = pd.DataFrame(self.transform_train) 
+                x_test_df = pd.DataFrame(self.transform_test)
              
                 logger.info("data transform successfully") 
                 logger.info("load the train,test transformed data") 
                 self.config.TRANSFORM_DATA_DIR.mkdir(parents=True,exist_ok=True) 
-                load_csv(self.config.TRANSFORM_TRAIN_FILE,train_df) 
-                load_csv(self.config.TRANSFORM_TEST_FILE,test_df) 
+                load_csv(self.config.TRANSFORM_TRAIN_FILE,x_train_df) 
+                load_csv(self.config.TRANSFORM_TEST_FILE,x_test_df) 
+                load_csv(self.config.TRANSFORM_Y_TEST_FILE,y_test)
                 self.config.PREPROCCESSOR_DIR.mkdir(parents=True,exist_ok=True)
                  
                 dump_pkl(self.preproccessor,self.config.PREPROCCESSOR_FILE) 

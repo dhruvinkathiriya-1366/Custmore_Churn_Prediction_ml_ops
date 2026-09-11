@@ -58,8 +58,8 @@ stages:
        - src/utils/common.py
       
      outs:
-       - artifacts/transform/train.csv
-       - artifacts/transform/test.csv
+       - artifacts/transform/x_train.csv
+       - artifacts/transform/x_test.csv
        - artifacts/transform/preproccessor/preproccessor.pkl
 
   model_trainer:
@@ -72,8 +72,8 @@ stages:
       - src/entity/config_entity.py
       - src/entity/artifact_entity.py
       - src/utils/common.py
-      - artifacts/transform/train.csv
-      - artifacts/transform/test.csv
+      - artifacts/transform/x_train.csv
+      - artifacts/transform/x_test.csv
       - artifacts/transform/preproccessor/preproccessor.pkl
       - params.yaml
 
@@ -81,5 +81,24 @@ stages:
       - artifacts/models/model.pkl
       - artifacts/prediction/prediction_train.csv
       - artifacts/prediction/prediction_test.csv
+
+  model_evaluation:
+    cmd: python src/components/model_evaluation.py
+
+    deps:
+      - src/components/model_evaluation.py
+      - configs/config.py
+      - configs/settings.py
+      - src/entity/config_entity.py
+      - src/entity/artifact_entity.py
+      - src/utils/common.py
+      - artifacts/transform/y_test.csv
+      - artifacts/transform/y_train.csv
+      - artifacts/prediction/prediction_train.csv
+      - artifacts/prediction/prediction_test.csv
+
+    outs:
+      - artifacts/metrics/metrics.json
+
        
     

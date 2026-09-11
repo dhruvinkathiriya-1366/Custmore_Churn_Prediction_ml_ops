@@ -13,6 +13,8 @@ RAW_DATA_DIR_FILE_NAME="raw.csv"
 TRAIN_TEST_DIR_NAME="feature"
 TRAIN_FILE_NAME="train.csv"
 TEST_FILE_NAME="test.csv"
+Y_TRAIN_FILE_NAME="Y_train.csv"
+Y_TEST_FILE_NAME="Y_test.csv"
 TEST_SPLIT_RATIO=0.2
 
 
@@ -32,8 +34,9 @@ DROP_COLUMN=['ZipCode','City','Quarter','State','Country','CustomerID','ChurnSco
 
 #transform
 TRANSFORM_DATA_DIR_NAME="transform"
-TRANSFORM_TRAIN_FILE_NAME="train.csv"
-TRANSFORM_TEST_FILE_NAME="test.csv"
+TRANSFORM_TRAIN_FILE_NAME="x_train.csv"
+TRANSFORM_TEST_FILE_NAME="x_test.csv"
+TRANSFORM_Y_TEST_FILE_NAME="y_test.csv"
 PREPROCCESSOR_DIR_NAME="preproccessor"
 PREPROCCESSOR_FILE_NAME="preproccessor.pkl"
 NOT_SCALLNEED=['ZipCode','City','Quarter','State','Country','CustomerID','ChurnScore','ChurnCategory','ChurnReason','CLTV','CustomerStatus','Dependents','ReferredaFriend','InternetService']
@@ -45,3 +48,7 @@ PREDICTION_DIR_NAME="prediction"
 PREDICTION_TRAIN_FILE_NAME="prediction_train.csv"
 PREDICTION_TEST_FILE_NAME="prediction_test.csv"
 PARAMS_YAML_FILE_NAME="params.yaml"
+
+#model evaluation
+METRICS_DIR_NAME="metrics"
+METRICS_FILE_NAME="metrics.json"

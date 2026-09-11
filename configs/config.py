@@ -15,6 +15,8 @@ class ConfigurationManager:
             TRAIN_TEST_DIR=TRAIN_TEST_DIR_PATH,
             TRAIN_FILE=TRAIN_FILE_PATH,
             TEST_FILE=TEST_FILE_PATH,
+            Y_TEST_FILE=Y_TEST_FILE_PATH,
+            Y_TRAIN_FILE=Y_TRAIN_FILE_PATH
         )
             )
         
@@ -42,6 +44,7 @@ class ConfigurationManager:
                     TRANSFORM_DATA_DIR=TRANSFORM_DATA_DIR_PATH,
                     TRANSFORM_TEST_FILE=TRANSFORM_TEST_FILE_PATH, 
                     TRANSFORM_TRAIN_FILE=TRANSFORM_TRAIN_FILE_PATH ,
+                    TRANSFORM_Y_TEST_FILE=TRANSFORM_Y_TEST_FILE_PATH,
                     PREPROCCESSOR_DIR=PREPROCCESSOR_DIR_PATH,
                     PREPROCCESSOR_FILE=PREPROCCESSOR_FILE_PATH
             )
@@ -57,4 +60,12 @@ class ConfigurationManager:
                 PREDICTION_TEST_FILE=PREDICTION_TEST_FILE_PATH,
                 PARAMS_YAML_FILE=PARAMS_YAML_FILE_PATH,
             ) 
+        )
+        
+    def get_model_evauation_config(self):
+        return(
+            ModelEvaluationConfig(
+                METRICS_DIR=METRICS_DIR_PATH,
+                METRICS_FILE=METRICS_FILE_PATH
+            )
         )
