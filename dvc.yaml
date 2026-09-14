@@ -80,6 +80,7 @@ stages:
       - artifacts/transform/x_test.csv
       - artifacts/transform/y_train.csv
       - artifacts/transform/y_test.csv
+      - params.yaml
 
     outs:
       - artifacts/models/model.pkl

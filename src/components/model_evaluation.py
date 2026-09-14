@@ -4,6 +4,7 @@ from configs.config import ConfigurationManager
 from src.utils.common import (read_csv,write_json) 
 from src.logger import logger
 from src.exception import MyException
+import mlflow
 
 class ModelEvaluation: 
    def __init__(self):
@@ -28,27 +29,36 @@ class ModelEvaluation:
        
    def intialize_model_evaluation(self):
        try:
-            y_test=read_csv(self.transform_config.TRANSFORM_Y_TEST_FILE).squeeze()
-            y_pred=read_csv(self.model_trainer_config.PREDICTION_TEST_FILE).squeeze()
-            
-            logger.info("start the model evaluation")
-            
-            metrics=self.evaluat_metrics(y_test,y_pred)
-            logger.info(f"accuracy:{metrics['accuracy']}")
-            logger.info(f"precision:{metrics['precision']}")
-            logger.info(f"recall:{metrics['recall']}")
-            logger.info(f"F1_score:{metrics['f1_score']}")
-            logger.info(f"confusion_metrics:{metrics['confusion_metrics']}")
-            
-            logger.info("write in json......")
-            data=({
-                'accuracy':metrics['accuracy'],
-                'precision':metrics['precision'],
-                'recall':metrics['recall'],
-                'F1_score':metrics['f1_score'],
-            })
-            write_json(self.evaluation_config.METRICS_FILE,data)
-            logger.info("complete the model evaluation")
+            mlflow.set_experiment("custome_churn_prediction")
+            with mlflow.start_run():
+                
+                y_test=read_csv(self.transform_config.TRANSFORM_Y_TEST_FILE).squeeze()
+                y_pred=read_csv(self.model_trainer_config.PREDICTION_TEST_FILE).squeeze()
+                
+                logger.info("start the model evaluation")
+                
+                metrics=self.evaluat_metrics(y_test,y_pred)
+                
+                mlflow.log_metric("accuracy", metrics['accuracy'])
+                mlflow.log_metric("precision", metrics["precision"])
+                mlflow.log_metric("recall", metrics["recall"])
+                mlflow.log_metric("f1_score", metrics["f1_score"])
+                
+                logger.info(f"accuracy:{metrics['accuracy']}")
+                logger.info(f"precision:{metrics['precision']}")
+                logger.info(f"recall:{metrics['recall']}")
+                logger.info(f"F1_score:{metrics['f1_score']}")
+                logger.info(f"confusion_metrics:{metrics['confusion_metrics']}")
+                
+                logger.info("write in json......")
+                data=({
+                    'accuracy':metrics['accuracy'],
+                    'precision':metrics['precision'],
+                    'recall':metrics['recall'],
+                    'F1_score':metrics['f1_score'],
+                })
+                write_json(self.evaluation_config.METRICS_FILE,data)
+                logger.info("complete the model evaluation")
        except Exception as e:
            raise MyException(e,sys)
 

@@ -2,9 +2,11 @@ import sys
 from configs.config import ConfigurationManager
 from src.logger import logger
 from src.exception import MyException
-from src.utils.common import (read_csv,load_csv,dump_pkl)
+from src.utils.common import (read_csv,load_csv,dump_pkl,read_yaml)
 from sklearn.svm import SVC
 import pandas as pd
+import mlflow 
+import mlflow.sklearn
 
 class ModelTrainer:
     def __init__(self):
@@ -40,14 +42,25 @@ class ModelTrainer:
     def train_model(self):
         
         try:
-            logger.info("initialize the model")
-            model=SVC(
-                    class_weight='balanced',
-                    kernel='rbf',
-                    C=1,
-                    gamma=0.001
-                    )
-            return model
+            self.params=read_yaml(self.model_trainer_config.PARAMS_YAML_FILE)
+            
+            # mlflow
+            mlflow.set_experiment("custome_churn_prediction")
+            with mlflow.start_run():
+                mlflow.log_param("model", "SVC")
+                mlflow.log_param("class_weight",self.params["MODEL"]["class_weight"])
+                mlflow.log_param("kernel",self.params["MODEL"]["kernel"])
+                mlflow.log_param("C", self.params["MODEL"]["c"])
+                mlflow.log_param("gamma", self.params["MODEL"]["gamma"])
+
+                logger.info("initialize the model")
+                model=SVC(
+                        class_weight=self.params["MODEL"]["class_weight"],
+                        kernel=self.params["MODEL"]["kernel"],
+                        C=self.params["MODEL"]["c"],
+                        gamma=self.params["MODEL"]["gamma"]
+                        )
+                return model
         except Exception as e:
             raise MyException(e,sys)
         
@@ -60,6 +73,10 @@ class ModelTrainer:
             
             logger.info("start the model training.....")
             model.fit(x_train,y_train)
+            
+            mlflow.sklearn.log_model(model,"model")
+            
+            
             logger.info("train model successfully")
             logger.info("save the model .pkl file")
             self.model_trainer_config.MODELS_DIR.mkdir(parents=True,exist_ok=True)

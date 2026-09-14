@@ -1,0 +1,22 @@
+artifact_path: file:D:/study/Project/Custmore_Churn_Prediction_ml_ops/mlruns/2/models/m-720035ed99ae4a47a56e692222494094/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.14.3
+  sklearn:
+    code: null
+    pickled_model: model.skops  
+    serialization_format: skops
+    sklearn_version: 1.9.0
+    skops_trusted_types: null
+mlflow_version: 3.15.2
+model_id: m-720035ed99ae4a47a56e692222494094
+model_size_bytes: 1034472
+model_uuid: m-720035ed99ae4a47a56e692222494094
+prompts: null
+utc_time_created: '2026-09-14 05:39:18.487377'
