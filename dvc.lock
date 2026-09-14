@@ -183,10 +183,14 @@ stages:
       hash: md5
       md5: a351e7900299197b05e4643a1bc40711
       size: 1688
+    - path: params.yaml
+      hash: md5
+      md5: 9498395b23585067e287e5e58ac9a0e5
+      size: 91
     - path: src/components/model_trainer.py
       hash: md5
-      md5: ac9a3d70fdfd26fa4febfe871eadd618
-      size: 3443
+      md5: ddbd7352e44a8aae57aa2d3b7676ee9d
+      size: 4288
     - path: src/entity/artifact_entity.py
       hash: md5
       md5: 2720f82d5ff639fbb8c4f4be31433232
@@ -237,8 +241,8 @@ stages:
       size: 1688
     - path: src/components/model_evaluation.py
       hash: md5
-      md5: 408996fd4727ddbd6f19e16311c41a9d
-      size: 2431
+      md5: 102d5ab3155f84a5da783c443969c694
+      size: 2955
     - path: src/entity/artifact_entity.py
       hash: md5
       md5: 2720f82d5ff639fbb8c4f4be31433232
