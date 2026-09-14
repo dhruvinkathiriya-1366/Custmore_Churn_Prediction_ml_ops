@@ -43,9 +43,6 @@
       <button class="tab-btn active" data-target="tab-single">
         <span>⚡</span> Quick Churn Predictor
       </button>
-      <button class="tab-btn" data-target="tab-batch">
-        <span>📁</span> Batch CSV Analysis
-      </button>
       <button class="tab-btn" data-target="tab-metrics">
         <span>📊</span> Model Performance
       </button>
@@ -258,53 +255,7 @@
       </div>
     </section>
 
-    <!-- Tab 2: Batch CSV -->
-    <section id="tab-batch" class="tab-panel">
-      <div class="glass-card">
-        <div class="card-title-bar">
-          <h2><span>📁</span> Batch Customer Inference</h2>
-          <button class="docs-btn" id="btn-download-sample">📥 Download Sample CSV</button>
-        </div>
 
-        <div class="dropzone" id="csv-dropzone">
-          <div style="font-size: 3rem;">☁️</div>
-          <h3 style="font-size: 1.15rem;">Drop your Customer CSV file here</h3>
-          <p style="color: var(--text-muted); font-size: 0.85rem;">or click to browse from your device</p>
-          <input type="file" id="batch-file-input" accept=".csv" style="display: none;">
-        </div>
-
-        <div id="batch-results-wrapper" style="display: none; margin-top: 1.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <div>
-              <h3 style="font-family: 'Outfit', sans-serif;">Batch Results Summary</h3>
-              <p id="batch-summary-text" style="font-size: 0.85rem; color: var(--text-muted);"></p>
-            </div>
-            <button class="docs-btn" id="btn-export-csv" style="background: var(--primary); color: #fff; font-weight: 600;">
-              💾 Export Results CSV
-            </button>
-          </div>
-
-          <div class="table-wrapper">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Contract</th>
-                  <th>Tenure</th>
-                  <th>Monthly ($)</th>
-                  <th>Satisfaction</th>
-                  <th>Decision</th>
-                  <th>Churn Probability</th>
-                  <th>Risk Level</th>
-                </tr>
-              </thead>
-              <tbody id="batch-table-body"></tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-    </section>
 
     <!-- Tab 3: Metrics -->
     <section id="tab-metrics" class="tab-panel">

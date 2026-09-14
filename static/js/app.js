@@ -102,6 +102,8 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.closePath();
     }
 
+    const sparks = [];
+
     // Helper: draw electric lightning surge along an exact grid edge segment
     function drawEdgeLightning(x1, y1, x2, y2, intensity = 1.0, color = "#00f0ff") {
       const dx = x2 - x1;
@@ -235,45 +237,129 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // -----------------------------------------------------
-      // Pass 3: Electric Lightning Surges Strictly During Mouse Hover on Grid Edges
+      // Pass 3: Electric Lightning Surges & High-Voltage Sparks Along Diamond Borders
       // -----------------------------------------------------
       if (activeHexagons.length > 0) {
         for (let i = 0; i < activeHexagons.length; i++) {
           const hex = activeHexagons[i];
-          if (hex.energy > 0.3) {
+          if (hex.energy > 0.25) {
             // Draw electric lightning micro-surges along active hexagon edges
             for (let e = 0; e < 6; e++) {
-              if (Math.random() < hex.energy * 0.7) {
-                const v1 = baseVertices[e];
-                const v2 = baseVertices[(e + 1) % 6];
+              const v1 = baseVertices[e];
+              const v2 = baseVertices[(e + 1) % 6];
+              const x1 = hex.cx + v1.x;
+              const y1 = hex.cy + v1.y;
+              const x2 = hex.cx + v2.x;
+              const y2 = hex.cy + v2.y;
+
+              if (Math.random() < hex.energy * 0.75) {
                 drawEdgeLightning(
-                  hex.cx + v1.x,
-                  hex.cy + v1.y,
-                  hex.cx + v2.x,
-                  hex.cy + v2.y,
+                  x1,
+                  y1,
+                  x2,
+                  y2,
                   hex.energy,
-                  `rgba(0, 240, 255, ${Math.min(hex.energy * 1.25, 1)})`
+                  `rgba(0, 240, 255, ${Math.min(hex.energy * 1.3, 1)})`
                 );
+
+                // Spawn vivid electric sparks flying off the lightning wire
+                if (Math.random() < hex.energy * 0.55 && sparks.length < 140) {
+                  const t = Math.random();
+                  const sx = x1 * (1 - t) + x2 * t;
+                  const sy = y1 * (1 - t) + y2 * t;
+                  const edgeAngle = Math.atan2(y2 - y1, x2 - x1);
+                  // Spray outwards from edge
+                  const sprayAngle = edgeAngle + (Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2) + (Math.random() - 0.5) * 0.8;
+                  const speed = 2.0 + Math.random() * 4.5 * hex.energy;
+
+                  sparks.push({
+                    x: sx,
+                    y: sy,
+                    vx: Math.cos(sprayAngle) * speed,
+                    vy: Math.sin(sprayAngle) * speed,
+                    life: 1.0,
+                    decay: 0.028 + Math.random() * 0.038,
+                    size: 1.5 + Math.random() * 2.0,
+                    length: 2.5 + Math.random() * 3.5,
+                    color: Math.random() > 0.4 ? "#00f0ff" : (Math.random() > 0.5 ? "#ffffff" : "#7df9ff")
+                  });
+                }
               }
             }
 
-            // Glowing white vertex sparks on energized intersections
-            if (hex.energy > 0.4) {
+            // Glowing white lightning vertex nodes & apex sparks
+            if (hex.energy > 0.38) {
               for (let v = 0; v < 6; v++) {
-                if (Math.random() < 0.45) {
-                  const vx = hex.cx + baseVertices[v].x;
-                  const vy = hex.cy + baseVertices[v].y;
+                const vx = hex.cx + baseVertices[v].x;
+                const vy = hex.cy + baseVertices[v].y;
+
+                if (Math.random() < 0.5) {
                   ctx.beginPath();
-                  ctx.arc(vx, vy, 2.2 * hex.energy, 0, Math.PI * 2);
+                  ctx.arc(vx, vy, 2.4 * hex.energy, 0, Math.PI * 2);
                   ctx.fillStyle = "#ffffff";
                   ctx.shadowColor = "#00f0ff";
-                  ctx.shadowBlur = 18;
+                  ctx.shadowBlur = 20;
                   ctx.fill();
+
+                  // Vertex spark burst
+                  if (Math.random() < 0.25 && sparks.length < 140) {
+                    const sparkAngle = Math.random() * Math.PI * 2;
+                    const spd = 2.5 + Math.random() * 4.0;
+                    sparks.push({
+                      x: vx,
+                      y: vy,
+                      vx: Math.cos(sparkAngle) * spd,
+                      vy: Math.sin(sparkAngle) * spd,
+                      life: 1.0,
+                      decay: 0.03 + Math.random() * 0.04,
+                      size: 1.8 + Math.random() * 1.6,
+                      length: 3.0 + Math.random() * 4.0,
+                      color: "#ffffff"
+                    });
+                  }
                 }
               }
             }
           }
         }
+      }
+
+      // -----------------------------------------------------
+      // Pass 4: Update & Render Electric Plasma Sparks (With Motion Streaks)
+      // -----------------------------------------------------
+      for (let s = sparks.length - 1; s >= 0; s--) {
+        const p = sparks[s];
+        const prevX = p.x;
+        const prevY = p.y;
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.94;
+        p.vy *= 0.94;
+        p.life -= p.decay;
+
+        if (p.life <= 0) {
+          sparks.splice(s, 1);
+          continue;
+        }
+
+        // High-velocity electric spark streak
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x - p.vx * p.length * p.life, p.y - p.vy * p.length * p.life);
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = p.size * p.life;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 12 * p.life;
+        ctx.stroke();
+
+        // Intense bright tip
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, (p.size * 0.8) * p.life, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "#ffffff";
+        ctx.shadowBlur = 10 * p.life;
+        ctx.fill();
       }
 
       requestAnimationFrame(renderHexagonEngine);
@@ -626,89 +712,7 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(update);
   }
 
-  // =========================================
-  // 8. Batch CSV Upload
-  // =========================================
-  const dropzone = document.getElementById("csv-dropzone");
-  const fileInput = document.getElementById("batch-file-input");
-  let lastBatch = [];
 
-  dropzone?.addEventListener("click", () => fileInput.click());
-  dropzone?.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("dragover"); });
-  dropzone?.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
-  dropzone?.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropzone.classList.remove("dragover");
-    if (e.dataTransfer.files.length > 0) handleBatchFile(e.dataTransfer.files[0]);
-  });
-  fileInput?.addEventListener("change", () => {
-    if (fileInput.files.length > 0) handleBatchFile(fileInput.files[0]);
-  });
-
-  async function handleBatchFile(file) {
-    if (!file.name.endsWith(".csv")) {
-      alert("Please upload a .csv file");
-      return;
-    }
-    const formData = new FormData();
-    formData.append("file", file);
-
-    dropzone.innerHTML = `<div class="spinner" style="width:36px;height:36px;margin:1rem auto;"></div><h3>Processing ${file.name}...</h3>`;
-
-    try {
-      const res = await fetch("/api/predict/batch", { method: "POST", body: formData });
-      if (!res.ok) throw new Error((await res.json()).detail || "Batch prediction failed");
-
-      const data = await res.json();
-      lastBatch = data.results;
-
-      document.getElementById("batch-results-wrapper").style.display = "block";
-      document.getElementById("batch-summary-text").textContent = 
-        `Processed: ${data.total_count} records | Churn: ${data.churn_count} (${((data.churn_count/data.total_count)*100).toFixed(1)}%) | Retained: ${data.retained_count}`;
-
-      const tbody = document.getElementById("batch-table-body");
-      tbody.innerHTML = "";
-      data.results.slice(0, 50).forEach((r, i) => {
-        const tr = document.createElement("tr");
-        const isC = r.prediction === 1;
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${r.Contract || "Month-to-Month"}</td>
-          <td>${r.TenureinMonths ?? "N/A"}</td>
-          <td>$${r.MonthlyCharge ?? "N/A"}</td>
-          <td>${r.SatisfactionScore ?? "N/A"}/5</td>
-          <td><strong style="color:${isC ? 'var(--neon-rose)' : 'var(--neon-cyan)'}">${r.label}</strong></td>
-          <td>${r.churn_probability}%</td>
-          <td><span class="verdict-badge ${r.risk_level.toLowerCase()}">${r.risk_level}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-    } catch (err) {
-      alert(err.message);
-    } finally {
-      dropzone.innerHTML = `<div style="font-size:3rem;">☁️</div><h3 style="font-size:1.15rem;">Drop your Customer CSV file here</h3><p style="color:var(--text-muted);font-size:0.85rem;">or click to browse from your device</p>`;
-    }
-  }
-
-  document.getElementById("btn-export-csv")?.addEventListener("click", () => {
-    if (!lastBatch || lastBatch.length === 0) return;
-    const headers = Object.keys(lastBatch[0]);
-    const csvRows = [headers.join(",")];
-    lastBatch.forEach(item => {
-      csvRows.push(headers.map(h => JSON.stringify(item[h] ?? "")).join(","));
-    });
-    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "churn_predictions.csv";
-    a.click();
-  });
-
-  document.getElementById("btn-download-sample")?.addEventListener("click", () => {
-    window.location.href = "/api/sample-csv";
-  });
 
   // =========================================
   // 9. Load Metrics
