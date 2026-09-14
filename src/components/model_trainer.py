@@ -5,7 +5,6 @@ from src.exception import MyException
 from src.utils.common import (read_csv,load_csv,dump_pkl,read_yaml)
 from sklearn.svm import SVC
 import pandas as pd
-import mlflow 
 import mlflow.sklearn
 
 class ModelTrainer:
