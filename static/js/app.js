@@ -102,8 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.closePath();
     }
 
-    const sparks = [];
-
     // Helper: draw electric lightning surge along an exact grid edge segment
     function drawEdgeLightning(x1, y1, x2, y2, intensity = 1.0, color = "#00f0ff") {
       const dx = x2 - x1;
@@ -237,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // -----------------------------------------------------
-      // Pass 3: Electric Lightning Surges & High-Voltage Sparks Along Diamond Borders
+      // Pass 3: Electric Lightning Surges Along Diamond Borders
       // -----------------------------------------------------
       if (activeHexagons.length > 0) {
         for (let i = 0; i < activeHexagons.length; i++) {
@@ -261,33 +259,10 @@ document.addEventListener("DOMContentLoaded", () => {
                   hex.energy,
                   `rgba(0, 240, 255, ${Math.min(hex.energy * 1.3, 1)})`
                 );
-
-                // Spawn vivid electric sparks flying off the lightning wire
-                if (Math.random() < hex.energy * 0.55 && sparks.length < 140) {
-                  const t = Math.random();
-                  const sx = x1 * (1 - t) + x2 * t;
-                  const sy = y1 * (1 - t) + y2 * t;
-                  const edgeAngle = Math.atan2(y2 - y1, x2 - x1);
-                  // Spray outwards from edge
-                  const sprayAngle = edgeAngle + (Math.random() > 0.5 ? Math.PI / 2 : -Math.PI / 2) + (Math.random() - 0.5) * 0.8;
-                  const speed = 2.0 + Math.random() * 4.5 * hex.energy;
-
-                  sparks.push({
-                    x: sx,
-                    y: sy,
-                    vx: Math.cos(sprayAngle) * speed,
-                    vy: Math.sin(sprayAngle) * speed,
-                    life: 1.0,
-                    decay: 0.028 + Math.random() * 0.038,
-                    size: 1.5 + Math.random() * 2.0,
-                    length: 2.5 + Math.random() * 3.5,
-                    color: Math.random() > 0.4 ? "#00f0ff" : (Math.random() > 0.5 ? "#ffffff" : "#7df9ff")
-                  });
-                }
               }
             }
 
-            // Glowing white lightning vertex nodes & apex sparks
+            // Glowing white lightning vertex nodes
             if (hex.energy > 0.38) {
               for (let v = 0; v < 6; v++) {
                 const vx = hex.cx + baseVertices[v].x;
@@ -300,66 +275,11 @@ document.addEventListener("DOMContentLoaded", () => {
                   ctx.shadowColor = "#00f0ff";
                   ctx.shadowBlur = 20;
                   ctx.fill();
-
-                  // Vertex spark burst
-                  if (Math.random() < 0.25 && sparks.length < 140) {
-                    const sparkAngle = Math.random() * Math.PI * 2;
-                    const spd = 2.5 + Math.random() * 4.0;
-                    sparks.push({
-                      x: vx,
-                      y: vy,
-                      vx: Math.cos(sparkAngle) * spd,
-                      vy: Math.sin(sparkAngle) * spd,
-                      life: 1.0,
-                      decay: 0.03 + Math.random() * 0.04,
-                      size: 1.8 + Math.random() * 1.6,
-                      length: 3.0 + Math.random() * 4.0,
-                      color: "#ffffff"
-                    });
-                  }
                 }
               }
             }
           }
         }
-      }
-
-      // -----------------------------------------------------
-      // Pass 4: Update & Render Electric Plasma Sparks (With Motion Streaks)
-      // -----------------------------------------------------
-      for (let s = sparks.length - 1; s >= 0; s--) {
-        const p = sparks[s];
-        const prevX = p.x;
-        const prevY = p.y;
-
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vx *= 0.94;
-        p.vy *= 0.94;
-        p.life -= p.decay;
-
-        if (p.life <= 0) {
-          sparks.splice(s, 1);
-          continue;
-        }
-
-        // High-velocity electric spark streak
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x - p.vx * p.length * p.life, p.y - p.vy * p.length * p.life);
-        ctx.strokeStyle = p.color;
-        ctx.lineWidth = p.size * p.life;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 12 * p.life;
-        ctx.stroke();
-
-        // Intense bright tip
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, (p.size * 0.8) * p.life, 0, Math.PI * 2);
-        ctx.fillStyle = "#ffffff";
-        ctx.shadowColor = "#ffffff";
-        ctx.shadowBlur = 10 * p.life;
-        ctx.fill();
       }
 
       requestAnimationFrame(renderHexagonEngine);
