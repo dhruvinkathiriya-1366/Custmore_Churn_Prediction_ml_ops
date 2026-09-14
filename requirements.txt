@@ -10,4 +10,6 @@ dvc
 fastapi
 uvicorn
 pytest
+sys
+pathlib
 -e .
