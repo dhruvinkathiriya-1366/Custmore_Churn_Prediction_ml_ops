@@ -189,8 +189,8 @@ stages:
       size: 91
     - path: src/components/model_trainer.py
       hash: md5
-      md5: ddbd7352e44a8aae57aa2d3b7676ee9d
-      size: 4288
+      md5: 521e63cee932226d929bf639e620a2a3
+      size: 4332
     - path: src/entity/artifact_entity.py
       hash: md5
       md5: 2720f82d5ff639fbb8c4f4be31433232

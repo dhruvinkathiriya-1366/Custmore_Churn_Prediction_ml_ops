@@ -74,8 +74,7 @@ class ModelTrainer:
             logger.info("start the model training.....")
             model.fit(x_train,y_train)
             
-            mlflow.sklearn.log_model(model,"model")
-            
+            mlflow.sklearn.log_model( model,"model",registered_model_name="CustomerChurnModel")
             
             logger.info("train model successfully")
             logger.info("save the model .pkl file")
