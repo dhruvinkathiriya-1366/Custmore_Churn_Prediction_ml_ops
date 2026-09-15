@@ -2,6 +2,7 @@ import os
 import io
 import sys
 from pathlib import Path
+import fastapi
 from fastapi import FastAPI, UploadFile, File, HTTPException, Request
 from fastapi.responses import HTMLResponse, Response, JSONResponse
 from fastapi.staticfiles import StaticFiles

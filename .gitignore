@@ -8,4 +8,4 @@
 /preprocessor
 /artifacts/transform/
 *.csv
-/.pyc
+*.pyc

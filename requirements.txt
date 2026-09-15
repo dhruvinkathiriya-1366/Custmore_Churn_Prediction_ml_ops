@@ -10,6 +10,9 @@ dvc
 fastapi
 uvicorn
 pytest
-sys
 pathlib
+jinja2
+setuptools
+dotenv
+pymongo
 -e .

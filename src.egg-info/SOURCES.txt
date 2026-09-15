@@ -4,7 +4,7 @@ setup.py
 configs/__init__.py
 configs/config.py
 configs/mongo_configuration.py
-configs/paths.py
+configs/path.py
 configs/settings.py
 src/__init__.py
 src.egg-info/PKG-INFO
@@ -21,13 +21,16 @@ src/components/model_trainer.py
 src/entity/__init__.py
 src/entity/artifact_entity.py
 src/entity/config_entity.py
+src/entity/predict_entity.py
 src/exception/__init__.py
 src/logger/__init__.py
 src/pipeline/__init__.py
+src/pipeline/prediction_pipeline.py
 src/pipeline/training_pipeline.py
 src/utils/__init__.py
 src/utils/common.py
 tests/__init__.py
+tests/test_api.py
 tests/test_data_transformation.py
 tests/test_data_validation.py
 tests/test_model.py
