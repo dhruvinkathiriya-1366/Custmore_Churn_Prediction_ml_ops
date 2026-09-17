@@ -138,7 +138,7 @@ stages:
     outs:
     - path: artifacts/transform/preproccessor/preproccessor.pkl
       hash: md5
-      md5: 6e006ae96da86736035edcefd06e0757
+      md5: af027edefa7723cf67a5b82f0ac00467
       size: 10473
     - path: artifacts/transform/x_test.csv
       hash: md5
@@ -189,8 +189,8 @@ stages:
       size: 91
     - path: src/components/model_trainer.py
       hash: md5
-      md5: 521e63cee932226d929bf639e620a2a3
-      size: 4332
+      md5: 455d7009d672bd8fd19f8fe5927cacca
+      size: 4302
     - path: src/entity/artifact_entity.py
       hash: md5
       md5: 2720f82d5ff639fbb8c4f4be31433232
@@ -206,7 +206,7 @@ stages:
     outs:
     - path: artifacts/models/model.pkl
       hash: md5
-      md5: fa719359a23f0185e9f70be90453120b
+      md5: b1cbb32549c19183beb811517340d485
       size: 1004555
     - path: artifacts/prediction/prediction_test.csv
       hash: md5
