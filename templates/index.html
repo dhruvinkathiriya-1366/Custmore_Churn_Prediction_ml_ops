@@ -8,12 +8,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Stylesheet -->
-  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Stylesheet with cache-busting -->
+  <link rel="stylesheet" href="/static/css/style.css?v=3.1">
 </head>
-<body>
+<body class="light-theme">
 
   <!-- Interactive Hexagon Grid Canvas -->
   <canvas id="lightning-canvas"></canvas>
@@ -24,7 +24,7 @@
       <div class="logo-badge">⚡</div>
       <div class="logo-text">
         <h1>ChurnSense AI</h1>
-        <p>Customer Retention & Risk Analytics</p>
+        <p>Customer Retention &amp; Risk Analytics</p>
       </div>
     </div>
     <div class="nav-actions">
@@ -57,7 +57,7 @@
         <button type="button" class="preset-chip" id="preset-high-risk">🚨 High Risk Customer</button>
         <button type="button" class="preset-chip" id="preset-loyal">🛡️ Loyal Retained Customer</button>
         <button type="button" class="preset-chip" id="preset-new">🆕 New Tech Customer</button>
-        <button type="button" class="preset-chip" id="preset-reset" style="margin-left: auto; opacity: 0.7;">↺ Reset</button>
+        <button type="button" class="preset-chip reset" id="preset-reset">↺ Reset</button>
       </div>
 
       <div class="grid-layout">
@@ -123,10 +123,10 @@
               </div>
               <div class="slider-container">
                 <div class="slider-top">
-                  <span style="font-size: 0.8rem; color: var(--text-muted);">1 Month</span>
-                  <div style="display: flex; align-items: center; gap: 0.3rem;">
+                  <span class="range-bound">1 Month</span>
+                  <div class="slider-num-wrap">
                     <input type="number" id="TenureinMonths" name="TenureinMonths" class="slider-val-box" value="4" min="1" max="72">
-                    <span style="font-size: 0.8rem; color: var(--text-muted);">Months</span>
+                    <span class="unit-text">Months</span>
                   </div>
                 </div>
                 <input type="range" id="tenure-range" class="range-input" min="1" max="72" value="4">
@@ -141,9 +141,9 @@
               </div>
               <div class="slider-container">
                 <div class="slider-top">
-                  <span style="font-size: 0.8rem; color: var(--text-muted);">$18</span>
-                  <div style="display: flex; align-items: center; gap: 0.3rem;">
-                    <span style="font-size: 0.9rem; color: var(--text-muted);">$</span>
+                  <span class="range-bound">$18</span>
+                  <div class="slider-num-wrap">
+                    <span class="unit-text">$</span>
                     <input type="number" step="0.5" id="MonthlyCharge" name="MonthlyCharge" class="slider-val-box" value="89.5" min="18" max="130">
                   </div>
                 </div>
@@ -158,9 +158,9 @@
                 <span class="input-hint">Auto-calculated ($)</span>
               </div>
               <div class="slider-container" style="margin-top: 0.3rem;">
-                <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <span style="font-size: 0.9rem; color: var(--text-muted);">$</span>
-                  <input type="number" step="any" id="TotalCharges" name="TotalCharges" class="slider-val-box" style="flex: 1; text-align: left;" value="358.00">
+                <div class="total-input-wrap">
+                  <span class="unit-text">$</span>
+                  <input type="number" step="any" id="TotalCharges" name="TotalCharges" class="slider-val-box full-box" value="358.00">
                 </div>
               </div>
             </div>
@@ -205,8 +205,8 @@
           <!-- Placeholder -->
           <div id="results-placeholder" class="placeholder-view">
             <span class="placeholder-anim-icon">🔮</span>
-            <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem;">Ready for AI Prediction</h3>
-            <p style="font-size: 0.88rem; color: var(--text-muted);">
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem; color: #0f172a;">Ready for AI Prediction</h3>
+            <p style="font-size: 0.88rem; color: #64748b;">
               Adjust the 7 sliders and buttons on the left, then click <strong>Predict Churn Risk</strong>.
             </p>
           </div>
@@ -218,7 +218,7 @@
             <div id="verdict-hero" class="verdict-hero churn">
               <span id="verdict-badge" class="verdict-badge high">HIGH CHURN RISK</span>
               <div id="verdict-title" class="verdict-big-title churn">Likely to Leave</div>
-              <p id="verdict-sub" style="font-size: 0.88rem; color: #cbd5e1;">Immediate customer intervention required</p>
+              <p id="verdict-sub" style="font-size: 0.88rem; color: #475569;">Immediate customer intervention required</p>
             </div>
 
             <!-- Gauge Meter -->
@@ -255,9 +255,7 @@
       </div>
     </section>
 
-
-
-    <!-- Tab 3: Metrics -->
+    <!-- Tab 2: Metrics -->
     <section id="tab-metrics" class="tab-panel">
       <div class="metrics-row">
         <div class="stat-card">
@@ -317,6 +315,6 @@
     <p>⚡ ChurnSense AI Studio | Production Retention Engine</p>
   </footer>
 
-  <script src="/static/js/app.js"></script>
+  <script src="/static/js/app.js?v=3.1"></script>
 </body>
 </html>

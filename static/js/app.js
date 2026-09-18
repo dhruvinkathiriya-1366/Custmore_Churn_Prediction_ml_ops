@@ -1,24 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   // =========================================================
-  // 0. Pure Diamond / Hexagon Grid Lightning & Glow Engine
+  // 0. Interactive Hexagon Grid Electric Lightning Hover Engine
   // =========================================================
   const canvas = document.getElementById("lightning-canvas");
   
   let mouseX = -9999;
   let mouseY = -9999;
   let isMouseOnScreen = false;
+  let lastMoveTime = performance.now();
 
   window.addEventListener("mousemove", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
     isMouseOnScreen = true;
+    lastMoveTime = performance.now();
   });
 
   window.addEventListener("mouseenter", (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
     isMouseOnScreen = true;
+    lastMoveTime = performance.now();
   });
 
   window.addEventListener("mouseleave", () => {
@@ -27,22 +30,20 @@ document.addEventListener("DOMContentLoaded", () => {
     mouseY = -9999;
   });
 
-  // Hexagon Honeycomb Canvas Renderer
   if (canvas) {
     const ctx = canvas.getContext("2d");
     let width = 0;
     let height = 0;
     let dpr = window.devicePixelRatio || 1;
 
-    const hexRadius = 32; // Hexagon radius
-    const hexWidth = Math.sqrt(3) * hexRadius; // ~55.42px
-    const hexVertSpacing = 1.5 * hexRadius;   // 48px
-    const hoverRadius = 160; // Focused mouse illumination radius
+    const hexRadius = 34; // Hexagon cell radius
+    const hexWidth = Math.sqrt(3) * hexRadius; // ~58.88px
+    const hexVertSpacing = 1.5 * hexRadius;   // 51px
+    const hoverRadius = 190; // Active interaction radius
 
     let hexagons = [];
-    const ripples = [];
 
-    // Precalculate vertices for a pointy-topped hexagon centered at (0,0)
+    // Pointy-topped hexagon base vertices relative to center
     const baseVertices = [];
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI / 6) + (i * Math.PI) / 3;
@@ -85,9 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    window.addEventListener("resize", () => {
-      initHexGrid();
-    });
+    window.addEventListener("resize", initHexGrid);
     initHexGrid();
 
     // Helper: draw single hexagon path
@@ -102,23 +101,23 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.closePath();
     }
 
-    // Helper: draw electric lightning surge along an exact grid edge segment
-    function drawEdgeLightning(x1, y1, x2, y2, intensity = 1.0, color = "#00f0ff") {
+    // Helper: draw high-voltage electric lightning bolt with perpendicular jitter
+    function drawElectricLightning(x1, y1, x2, y2, intensity = 1.0, color = "#00a6f4") {
       const dx = x2 - x1;
       const dy = y2 - y1;
       const len = Math.hypot(dx, dy);
+      if (len === 0) return;
+      
       const steps = 5;
+      const perpX = -dy / len;
+      const perpY = dx / len;
 
       ctx.beginPath();
       ctx.moveTo(x1, y1);
 
       for (let s = 1; s < steps; s++) {
         const t = s / steps;
-        // Jitter perpendicular to the edge
-        const perpX = -dy / len;
-        const perpY = dx / len;
-        const jitter = (Math.random() - 0.5) * 4.5 * intensity;
-
+        const jitter = (Math.random() - 0.5) * 5.0 * intensity;
         const px = x1 + dx * t + perpX * jitter;
         const py = y1 + dy * t + perpY * jitter;
         ctx.lineTo(px, py);
@@ -126,24 +125,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
       ctx.lineTo(x2, y2);
       ctx.strokeStyle = color;
-      ctx.lineWidth = 1.2 + intensity * 1.5;
-      ctx.shadowColor = "#00f0ff";
-      ctx.shadowBlur = 14 * intensity;
+      ctx.lineWidth = 1.4 + intensity * 1.8;
+      ctx.shadowColor = "#00a6f4";
+      ctx.shadowBlur = 12 * intensity;
       ctx.stroke();
 
-      // White lightning core for high intensity
-      if (intensity > 0.55) {
-        ctx.strokeStyle = `rgba(255, 255, 255, ${(intensity - 0.55) * 2.5})`;
-        ctx.lineWidth = 1.0;
+      // White-hot lightning core for high energy
+      if (intensity > 0.45) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min((intensity - 0.45) * 2.2, 1)})`;
+        ctx.lineWidth = 1.1;
         ctx.shadowColor = "#ffffff";
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 8;
         ctx.stroke();
       }
     }
 
     let lastFrameTime = performance.now();
 
-    function renderHexagonEngine(timestamp) {
+    function renderHexagonLightningEngine(timestamp) {
       const dt = (timestamp - lastFrameTime) / 1000;
       lastFrameTime = timestamp;
 
@@ -151,24 +153,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const activeHexagons = [];
 
-      // Update Hexagon energies based ONLY on active mouse hover
+      // Update energy levels based on mouse hover
       for (let i = 0; i < hexagons.length; i++) {
         const hex = hexagons[i];
 
-        // 1. Mouse distance illumination only when mouse is active on screen
         if (isMouseOnScreen) {
           const dx = hex.cx - mouseX;
           const dy = hex.cy - mouseY;
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < hoverRadius) {
-            const factor = Math.pow(1 - dist / hoverRadius, 1.8);
+            const factor = Math.pow(1 - dist / hoverRadius, 1.6);
             hex.energy = Math.max(hex.energy, factor);
           }
         }
 
-        // 2. Responsive smooth exponential decay
-        hex.energy *= 0.86;
+        // Smooth energy decay
+        hex.energy *= 0.89;
         if (hex.energy < 0.005) hex.energy = 0;
 
         if (hex.energy > 0.01) {
@@ -177,11 +178,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // -----------------------------------------------------
-      // Pass 1: Render All Base Hexagon Outlines (Crisp, Elegant Dark Diamond Grid)
+      // Pass 1: Crisp subtle cyan lattice background
       // -----------------------------------------------------
-      ctx.lineWidth = 1.1;
+      ctx.lineWidth = 0.9;
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = "rgba(0, 170, 255, 0.14)"; // Elegant, visible dark cyan-blue lattice
+      ctx.strokeStyle = "rgba(2, 132, 199, 0.13)";
 
       ctx.beginPath();
       for (let i = 0; i < hexagons.length; i++) {
@@ -196,8 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       ctx.stroke();
 
-      // Subtle vertex points on dark grid for high-tech aesthetic
-      ctx.fillStyle = "rgba(0, 220, 255, 0.22)";
+      // Subtle vertex micro-dots on lattice
+      ctx.fillStyle = "rgba(2, 132, 199, 0.22)";
       for (let i = 0; i < hexagons.length; i += 2) {
         const hex = hexagons[i];
         for (let v = 0; v < 6; v++) {
@@ -208,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // -----------------------------------------------------
-      // Pass 2: Render Glowing Diamond / Hexagon Borders (NO Inside Fill)
+      // Pass 2: Glowing cyan/blue borders on hover
       // -----------------------------------------------------
       for (let i = 0; i < activeHexagons.length; i++) {
         const hex = activeHexagons[i];
@@ -216,32 +217,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
         buildHexPath(hex.cx, hex.cy, 1.0);
 
-        // Neon Blue Hexagon Border along grid
-        ctx.strokeStyle = `rgba(0, 240, 255, ${Math.min(0.3 + energy * 0.7, 1)})`;
-        ctx.lineWidth = 1.3 + energy * 2.2;
-        ctx.shadowColor = "#00f0ff";
-        ctx.shadowBlur = energy * 22;
+        ctx.strokeStyle = `rgba(0, 119, 254, ${Math.min(0.3 + energy * 0.7, 0.95)})`;
+        ctx.lineWidth = 1.2 + energy * 2.0;
+        ctx.shadowColor = "#00a6f4";
+        ctx.shadowBlur = energy * 16;
         ctx.stroke();
 
-        // White-Hot Electric Core along the Border for Closest Cells
-        if (energy > 0.45) {
-          const coreAlpha = (energy - 0.45) * 1.85;
-          ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(coreAlpha, 1.0)})`;
-          ctx.lineWidth = 1.6;
+        // White-hot border highlight for closest hexagons
+        if (energy > 0.5) {
+          ctx.strokeStyle = `rgba(255, 255, 255, ${(energy - 0.5) * 1.8})`;
+          ctx.lineWidth = 1.3;
           ctx.shadowColor = "#ffffff";
-          ctx.shadowBlur = 12;
+          ctx.shadowBlur = 10;
           ctx.stroke();
         }
       }
 
       // -----------------------------------------------------
-      // Pass 3: Electric Lightning Surges Along Diamond Borders
+      // Pass 3: Electric lightning surges along grid edges
       // -----------------------------------------------------
       if (activeHexagons.length > 0) {
         for (let i = 0; i < activeHexagons.length; i++) {
           const hex = activeHexagons[i];
           if (hex.energy > 0.25) {
-            // Draw electric lightning micro-surges along active hexagon edges
             for (let e = 0; e < 6; e++) {
               const v1 = baseVertices[e];
               const v2 = baseVertices[(e + 1) % 6];
@@ -251,29 +249,29 @@ document.addEventListener("DOMContentLoaded", () => {
               const y2 = hex.cy + v2.y;
 
               if (Math.random() < hex.energy * 0.75) {
-                drawEdgeLightning(
+                drawElectricLightning(
                   x1,
                   y1,
                   x2,
                   y2,
                   hex.energy,
-                  `rgba(0, 240, 255, ${Math.min(hex.energy * 1.3, 1)})`
+                  `rgba(0, 166, 244, ${Math.min(hex.energy * 1.3, 1)})`
                 );
               }
             }
 
-            // Glowing white lightning vertex nodes
+            // Glowing lightning vertex nodes
             if (hex.energy > 0.38) {
               for (let v = 0; v < 6; v++) {
                 const vx = hex.cx + baseVertices[v].x;
                 const vy = hex.cy + baseVertices[v].y;
 
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.45) {
                   ctx.beginPath();
-                  ctx.arc(vx, vy, 2.4 * hex.energy, 0, Math.PI * 2);
+                  ctx.arc(vx, vy, 2.2 * hex.energy, 0, Math.PI * 2);
                   ctx.fillStyle = "#ffffff";
-                  ctx.shadowColor = "#00f0ff";
-                  ctx.shadowBlur = 20;
+                  ctx.shadowColor = "#00a6f4";
+                  ctx.shadowBlur = 15;
                   ctx.fill();
                 }
               }
@@ -282,10 +280,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      requestAnimationFrame(renderHexagonEngine);
+      requestAnimationFrame(renderHexagonLightningEngine);
     }
 
-    requestAnimationFrame(renderHexagonEngine);
+    requestAnimationFrame(renderHexagonLightningEngine);
   }
 
   // =========================================
@@ -483,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================================
-  // 6. Form Submission & Animation
+  // 6. Form Submission & Real-time Prediction
   // =========================================
   const form = document.getElementById("prediction-form");
   form?.addEventListener("submit", async (e) => {
@@ -527,9 +525,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // =========================================
-  // 7. Render Results with Animated Counter & Signals
-  // =========================================
   function displayResult(result, inputData) {
     document.getElementById("results-placeholder").style.display = "none";
     const content = document.getElementById("results-content");
@@ -557,7 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sub.textContent = "High probability of customer leaving the service";
       badge.className = "verdict-badge high";
       badge.textContent = `${result.risk_level.toUpperCase()} RISK`;
-      meterFill.style.background = "var(--neon-rose)";
+      meterFill.style.background = "var(--rose)";
     } else {
       hero.className = "verdict-hero stay";
       title.className = "verdict-big-title stay";
@@ -565,7 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sub.textContent = "Customer profile shows strong loyalty indicators";
       badge.className = "verdict-badge low";
       badge.textContent = `${result.risk_level.toUpperCase()} RISK`;
-      meterFill.style.background = "var(--neon-cyan)";
+      meterFill.style.background = "var(--emerald)";
     }
 
     signalsList.innerHTML = "";
@@ -632,10 +627,8 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(update);
   }
 
-
-
   // =========================================
-  // 9. Load Metrics
+  // 7. Load Metrics from API
   // =========================================
   async function loadMetrics() {
     try {
@@ -649,6 +642,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (e) {}
   }
+
   document.getElementById("btn-refresh-metrics")?.addEventListener("click", loadMetrics);
   loadMetrics();
 
