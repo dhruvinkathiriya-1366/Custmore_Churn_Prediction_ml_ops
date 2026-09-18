@@ -1,8 +1,6 @@
 numpy
 pandas
 scikit-learn
-matplotlib
-seaborn
 pyyaml
 joblib
 fastapi
@@ -11,4 +9,4 @@ jinja2
 setuptools
 python-dotenv
 pymongo
-python-multipart
+python-multipart

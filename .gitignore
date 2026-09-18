@@ -6,6 +6,5 @@
 /logs/
 /__pycache__
 /preprocessor
-/artifacts/transform/
 *.csv
-*.pyc
+*.pyc
