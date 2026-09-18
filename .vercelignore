@@ -1,0 +1,13 @@
+.venv
+.git
+.gitignore
+.dockerignore
+.dvc
+.dvcignore
+__pycache__
+*.pyc
+tests
+.pytest_cache
+*.log
+logs
+mlflow.db.backup

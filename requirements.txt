@@ -5,15 +5,10 @@ matplotlib
 seaborn
 pyyaml
 joblib
-mlflow
-dvc
 fastapi
 uvicorn
-pytest
-pathlib
 jinja2
 setuptools
-dotenv
+python-dotenv
 pymongo
 python-multipart
--e .
