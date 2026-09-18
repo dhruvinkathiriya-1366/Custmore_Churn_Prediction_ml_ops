@@ -2,10 +2,8 @@ import os
 import io
 import sys
 from pathlib import Path
-import fastapi
 from fastapi import FastAPI, UploadFile, File, HTTPException, Request
 from fastapi.responses import HTMLResponse, Response, JSONResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -34,15 +32,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Static and Templates configuration
+# Path configuration
 BASE_DIR = Path(__file__).resolve().parent
-STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
-STATIC_DIR.mkdir(parents=True, exist_ok=True)
-TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
-
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+# Static files are served by Vercel CDN from public/ via vercel.json routes.
+# Locally, run with: uvicorn app:app --reload (FastAPI serves static/ directly)
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
