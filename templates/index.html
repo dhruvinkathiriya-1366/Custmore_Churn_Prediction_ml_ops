@@ -4,30 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChurnSense AI | Customer Retention Studio</title>
-  
-  <!-- Fonts -->
+  <meta name="description" content="AI-Powered Customer Churn Prediction & Retention Analytics">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-  
-  <!-- Stylesheet with cache-busting -->
-  <link rel="stylesheet" href="/static/css/style.css?v=3.1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=5.0">
 </head>
-<body class="light-theme">
+<body>
 
-  <!-- Interactive Hexagon Grid Canvas -->
+  <!-- Lightning canvas -->
   <canvas id="lightning-canvas"></canvas>
 
-  <!-- Navbar -->
+  <!-- ══════════════ NAVBAR ══════════════ -->
   <header class="navbar">
-    <div class="logo-container">
-      <div class="logo-badge">⚡</div>
-      <div class="logo-text">
-        <h1>ChurnSense AI</h1>
-        <p>Customer Retention &amp; Risk Analytics</p>
+    <div class="nav-left">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <span class="logo-name">ChurnSense AI</span>
+          <span class="logo-sub">Customer Retention &amp; Risk Analytics</span>
+        </div>
       </div>
     </div>
-    <div class="nav-actions">
+
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-target="tab-predictor" id="tab-btn-predictor">
+        <span class="tab-icon">⚡</span> Quick Churn Predictor
+      </button>
+      <button class="nav-tab" data-target="tab-metrics" id="tab-btn-metrics">
+        <span class="tab-icon">📊</span> Model Performance
+      </button>
+    </nav>
+
+    <div class="nav-right">
       <span class="live-pill">
         <span class="live-dot"></span> MLflow SVC Model Active
       </span>
@@ -35,286 +44,262 @@
     </div>
   </header>
 
-  <!-- Container -->
+  <!-- ══════════════ MAIN ══════════════ -->
   <main class="container">
 
-    <!-- Tabs Navigation -->
-    <nav class="tabs-wrapper" role="tablist">
-      <button class="tab-btn active" data-target="tab-single">
-        <span>⚡</span> Quick Churn Predictor
-      </button>
-      <button class="tab-btn" data-target="tab-metrics">
-        <span>📊</span> Model Performance
-      </button>
-    </nav>
+    <!-- ── TAB: PREDICTOR ── -->
+    <section id="tab-predictor" class="tab-panel active">
 
-    <!-- Tab 1: Single Prediction -->
-    <section id="tab-single" class="tab-panel active">
-      
-      <!-- Presets Bar -->
-      <div class="presets-container">
+      <!-- Presets bar -->
+      <div class="presets-bar">
         <span class="presets-label">⚡ Sample Scenarios:</span>
-        <button type="button" class="preset-chip" id="preset-high-risk">🚨 High Risk Customer</button>
-        <button type="button" class="preset-chip" id="preset-loyal">🛡️ Loyal Retained Customer</button>
-        <button type="button" class="preset-chip" id="preset-new">🆕 New Tech Customer</button>
-        <button type="button" class="preset-chip reset" id="preset-reset">↺ Reset</button>
+        <button class="preset-chip danger"  id="preset-high-risk">🚨 High Risk Customer</button>
+        <button class="preset-chip success" id="preset-loyal">🛡️ Loyal Retained</button>
+        <button class="preset-chip primary" id="preset-new">🆕 New Tech Customer</button>
+        <button class="preset-chip reset"   id="preset-reset">↺ Reset</button>
       </div>
 
-      <div class="grid-layout">
-        
-        <!-- Input Form -->
-        <div class="glass-card">
-          <div class="card-title-bar">
-            <h2><span>📋</span> Customer Profile</h2>
-            <span class="badge-core">7 Core Signals</span>
+      <div class="two-col">
+
+        <!-- LEFT: Input form -->
+        <div class="card">
+          <div class="card-header">
+            <h2><span class="card-icon">📋</span> Customer Profile</h2>
+            <span class="badge">7 Core Signals</span>
           </div>
 
           <form id="prediction-form">
-            
-            <!-- Hidden inputs for custom component bindings -->
-            <input type="hidden" id="Contract" name="Contract" value="Month-to-Month">
-            <input type="hidden" id="SatisfactionScore" name="SatisfactionScore" value="2">
-            <input type="hidden" id="InternetType" name="InternetType" value="Fiber Optic">
-            <input type="hidden" id="PaymentMethod" name="PaymentMethod" value="Bank Withdrawal">
+            <input type="hidden" id="Contract"        value="Month-to-Month">
+            <input type="hidden" id="SatisfactionScore" value="2">
+            <input type="hidden" id="InternetType"    value="Fiber Optic">
+            <input type="hidden" id="PaymentMethod"   value="Bank Withdrawal">
 
-            <!-- 1. Contract Term -->
-            <div class="input-row">
-              <div class="input-label">
+            <!-- 1. Contract -->
+            <div class="field">
+              <div class="field-label">
                 <span>1. Contract Type</span>
-                <span class="input-hint">Highest Churn Impact</span>
+                <span class="field-tag hot">Highest Churn Impact</span>
               </div>
-              <div class="segmented-group" id="contract-segmented">
-                <button type="button" class="segmented-btn active" data-val="Month-to-Month">Month-to-Month</button>
-                <button type="button" class="segmented-btn" data-val="One Year">1 Year</button>
-                <button type="button" class="segmented-btn" data-val="Two Year">2 Years</button>
+              <div class="seg-group" id="contract-segmented">
+                <button type="button" class="seg-btn active" data-val="Month-to-Month">Month-to-Month</button>
+                <button type="button" class="seg-btn"        data-val="One Year">1 Year</button>
+                <button type="button" class="seg-btn"        data-val="Two Year">2 Years</button>
               </div>
             </div>
 
-            <!-- 2. Customer Satisfaction Score -->
-            <div class="input-row">
-              <div class="input-label">
+            <!-- 2. Satisfaction -->
+            <div class="field">
+              <div class="field-label">
                 <span>2. Customer Satisfaction</span>
-                <span class="input-hint" id="satisfaction-text">2 / 5 - Dissatisfied</span>
+                <span class="field-hint" id="satisfaction-text">2 / 5 – Dissatisfied 😟</span>
               </div>
               <div class="rating-group" id="satisfaction-rating">
-                <button type="button" class="rating-star-btn" data-score="1" title="1 - Highly Dissatisfied">
-                  <span class="star-icon">★</span><span>1</span>
-                </button>
-                <button type="button" class="rating-star-btn active" data-score="2" title="2 - Dissatisfied">
-                  <span class="star-icon">★</span><span>2</span>
-                </button>
-                <button type="button" class="rating-star-btn" data-score="3" title="3 - Neutral">
-                  <span class="star-icon">★</span><span>3</span>
-                </button>
-                <button type="button" class="rating-star-btn" data-score="4" title="4 - Satisfied">
-                  <span class="star-icon">★</span><span>4</span>
-                </button>
-                <button type="button" class="rating-star-btn" data-score="5" title="5 - Very Satisfied">
-                  <span class="star-icon">★</span><span>5</span>
-                </button>
+                <button type="button" class="star-btn" data-score="1" title="Highly Dissatisfied">★<span>1</span></button>
+                <button type="button" class="star-btn active" data-score="2" title="Dissatisfied">★<span>2</span></button>
+                <button type="button" class="star-btn" data-score="3" title="Neutral">★<span>3</span></button>
+                <button type="button" class="star-btn" data-score="4" title="Satisfied">★<span>4</span></button>
+                <button type="button" class="star-btn" data-score="5" title="Very Satisfied">★<span>5</span></button>
               </div>
             </div>
 
-            <!-- 3. Tenure Slider -->
-            <div class="input-row">
-              <div class="input-label">
+            <!-- 3. Tenure -->
+            <div class="field">
+              <div class="field-label">
                 <span>3. Tenure Duration</span>
-                <span class="input-hint">Time as customer</span>
+                <span class="field-hint">Time as customer</span>
               </div>
-              <div class="slider-container">
-                <div class="slider-top">
-                  <span class="range-bound">1 Month</span>
-                  <div class="slider-num-wrap">
-                    <input type="number" id="TenureinMonths" name="TenureinMonths" class="slider-val-box" value="4" min="1" max="72">
-                    <span class="unit-text">Months</span>
-                  </div>
+              <div class="slider-row">
+                <span class="bound">1 Mo</span>
+                <input type="range" id="tenure-range" class="slider" min="1" max="72" value="4">
+                <div class="val-wrap">
+                  <input type="number" id="TenureinMonths" class="val-box" value="4" min="1" max="72">
+                  <span class="val-unit">Months</span>
                 </div>
-                <input type="range" id="tenure-range" class="range-input" min="1" max="72" value="4">
               </div>
             </div>
 
-            <!-- 4. Monthly Charge Slider -->
-            <div class="input-row">
-              <div class="input-label">
+            <!-- 4. Monthly Charge -->
+            <div class="field">
+              <div class="field-label">
                 <span>4. Monthly Charge</span>
-                <span class="input-hint">Monthly bill</span>
+                <span class="field-hint">Monthly billing amount</span>
               </div>
-              <div class="slider-container">
-                <div class="slider-top">
-                  <span class="range-bound">$18</span>
-                  <div class="slider-num-wrap">
-                    <span class="unit-text">$</span>
-                    <input type="number" step="0.5" id="MonthlyCharge" name="MonthlyCharge" class="slider-val-box" value="89.5" min="18" max="130">
-                  </div>
+              <div class="slider-row">
+                <span class="bound">$18</span>
+                <input type="range" id="monthly-range" class="slider" min="18" max="130" step="0.5" value="89.5">
+                <div class="val-wrap">
+                  <span class="val-unit">$</span>
+                  <input type="number" step="0.5" id="MonthlyCharge" class="val-box" value="89.5" min="18" max="130">
                 </div>
-                <input type="range" id="monthly-range" class="range-input" min="18" max="130" step="0.5" value="89.5">
               </div>
             </div>
 
-            <!-- 5. Total Lifetime Charges (Auto-calculated) -->
-            <div class="input-row">
-              <div class="input-label">
+            <!-- 5. Total Charges -->
+            <div class="field">
+              <div class="field-label">
                 <span>5. Total Paid to Date</span>
-                <span class="input-hint">Auto-calculated ($)</span>
+                <span class="field-hint">Auto-calculated ($)</span>
               </div>
-              <div class="slider-container" style="margin-top: 0.3rem;">
-                <div class="total-input-wrap">
-                  <span class="unit-text">$</span>
-                  <input type="number" step="any" id="TotalCharges" name="TotalCharges" class="slider-val-box full-box" value="358.00">
-                </div>
+              <div class="val-wrap" style="margin-top:4px;">
+                <span class="val-unit">$</span>
+                <input type="number" step="any" id="TotalCharges" class="val-box wide-box" value="358.00">
               </div>
             </div>
 
-            <!-- 6. Internet Connection -->
-            <div class="input-row">
-              <div class="input-label">
-                <span>6. Internet Type</span>
-              </div>
-              <div class="segmented-group" id="internet-segmented">
-                <button type="button" class="segmented-btn active" data-val="Fiber Optic">Fiber Optic</button>
-                <button type="button" class="segmented-btn" data-val="Cable">Cable</button>
-                <button type="button" class="segmented-btn" data-val="DSL">DSL</button>
-                <button type="button" class="segmented-btn" data-val="None">No Internet</button>
+            <!-- 6. Internet -->
+            <div class="field">
+              <div class="field-label"><span>6. Internet Type</span></div>
+              <div class="seg-group" id="internet-segmented">
+                <button type="button" class="seg-btn active" data-val="Fiber Optic">Fiber Optic</button>
+                <button type="button" class="seg-btn"        data-val="Cable">Cable</button>
+                <button type="button" class="seg-btn"        data-val="DSL">DSL</button>
+                <button type="button" class="seg-btn"        data-val="None">No Internet</button>
               </div>
             </div>
 
-            <!-- 7. Payment Method -->
-            <div class="input-row">
-              <div class="input-label">
-                <span>7. Payment Method</span>
-              </div>
-              <div class="segmented-group" id="payment-segmented">
-                <button type="button" class="segmented-btn active" data-val="Bank Withdrawal">Bank Transfer</button>
-                <button type="button" class="segmented-btn" data-val="Credit Card">Credit Card</button>
-                <button type="button" class="segmented-btn" data-val="Mailed Check">Mailed Check</button>
+            <!-- 7. Payment -->
+            <div class="field">
+              <div class="field-label"><span>7. Payment Method</span></div>
+              <div class="seg-group" id="payment-segmented">
+                <button type="button" class="seg-btn active" data-val="Bank Withdrawal">Bank Transfer</button>
+                <button type="button" class="seg-btn"        data-val="Credit Card">Credit Card</button>
+                <button type="button" class="seg-btn"        data-val="Mailed Check">Mailed Check</button>
               </div>
             </div>
 
-            <button type="submit" class="btn-submit" id="btn-predict">
-              <span>🔮</span> Predict Churn Risk
+            <button type="submit" class="btn-predict" id="btn-predict">
+              🔮 Predict Churn Risk
             </button>
           </form>
         </div>
 
-        <!-- Result Display -->
-        <div class="glass-card" id="results-card">
-          <div class="card-title-bar">
-            <h2><span>🎯</span> Retention Analysis</h2>
+        <!-- RIGHT: Result -->
+        <div class="card" id="results-card">
+          <div class="card-header">
+            <h2><span class="card-icon">🎯</span> Retention Analysis</h2>
           </div>
 
           <!-- Placeholder -->
-          <div id="results-placeholder" class="placeholder-view">
-            <span class="placeholder-anim-icon">🔮</span>
-            <h3 style="font-size: 1.15rem; margin-bottom: 0.4rem; color: #0f172a;">Ready for AI Prediction</h3>
-            <p style="font-size: 0.88rem; color: #64748b;">
-              Adjust the 7 sliders and buttons on the left, then click <strong>Predict Churn Risk</strong>.
-            </p>
+          <div id="results-placeholder" class="placeholder">
+            <div class="placeholder-orb">🔮</div>
+            <h3>Ready for AI Prediction</h3>
+            <p>Adjust the 7 signals on the left and click <strong>Predict Churn Risk</strong> to get instant AI-powered retention analysis.</p>
+            <ul class="tips">
+              <li>⚡ Contract type has the highest churn impact</li>
+              <li>💡 Satisfaction score is a key predictor</li>
+              <li>📊 Tenure shows loyalty stage</li>
+            </ul>
           </div>
 
-          <!-- Result Content -->
-          <div id="results-content" class="result-view" style="display: none;">
-            
-            <!-- Verdict Hero -->
-            <div id="verdict-hero" class="verdict-hero churn">
+          <!-- Result -->
+          <div id="results-content" class="result" style="display:none;">
+
+            <!-- Verdict -->
+            <div id="verdict-hero" class="verdict churn">
               <span id="verdict-badge" class="verdict-badge high">HIGH CHURN RISK</span>
-              <div id="verdict-title" class="verdict-big-title churn">Likely to Leave</div>
-              <p id="verdict-sub" style="font-size: 0.88rem; color: #475569;">Immediate customer intervention required</p>
+              <div id="verdict-title" class="verdict-title">Likely to Leave</div>
+              <p id="verdict-sub" class="verdict-sub">Immediate customer intervention required</p>
             </div>
 
-            <!-- Gauge Meter -->
-            <div class="meter-card">
-              <div class="meter-header">
-                <span class="meter-title">Predicted Churn Probability</span>
-                <span id="churn-percent-num" class="meter-number">88.5%</span>
+            <!-- Gauge -->
+            <div class="gauge-card">
+              <div class="gauge-top">
+                <span class="gauge-label">Predicted Churn Probability</span>
+                <span id="churn-percent-num" class="gauge-num">88.5%</span>
               </div>
-              <div class="meter-track">
-                <div id="meter-bar-fill" class="meter-fill" style="width: 88.5%; background: var(--rose);"></div>
+              <div class="gauge-track">
+                <div id="meter-bar-fill" class="gauge-fill" style="width:88.5%"></div>
+              </div>
+              <div class="gauge-marks">
+                <span>Low</span><span>Medium</span><span>High</span>
               </div>
             </div>
 
-            <!-- Key Signals Detected -->
-            <div class="signals-box">
-              <h4><span>🔍</span> Key Risk Factors</h4>
-              <ul class="signal-items" id="risk-signals-list">
-                <!-- Injected via JS -->
-              </ul>
-            </div>
-
-            <!-- Recommended Actions -->
-            <div class="signals-box">
-              <h4><span>💡</span> Recommended Action</h4>
-              <ul class="signal-items" id="action-plan-list">
-                <!-- Injected via JS -->
-              </ul>
+            <!-- Risk Signals -->
+            <div class="signals-grid">
+              <div class="signals-box">
+                <h4>🔍 Key Risk Factors</h4>
+                <ul id="risk-signals-list" class="signal-list"></ul>
+              </div>
+              <div class="signals-box">
+                <h4>💡 Recommended Actions</h4>
+                <ul id="action-plan-list" class="signal-list"></ul>
+              </div>
             </div>
 
           </div>
-
         </div>
 
       </div>
     </section>
 
-    <!-- Tab 2: Metrics -->
+    <!-- ── TAB: METRICS ── -->
     <section id="tab-metrics" class="tab-panel">
+
       <div class="metrics-row">
         <div class="stat-card">
+          <div class="stat-icon blue">🎯</div>
+          <div class="stat-val" id="val-accuracy">92.97%</div>
           <div class="stat-label">Model Accuracy</div>
-          <div class="stat-value" id="val-accuracy">92.97%</div>
-          <div style="font-size: 0.8rem; color: var(--emerald); margin-top: 0.3rem;">↑ High overall accuracy</div>
+          <div class="stat-sub up">↑ High overall accuracy</div>
         </div>
         <div class="stat-card">
+          <div class="stat-icon purple">📌</div>
+          <div class="stat-val" id="val-precision">83.99%</div>
           <div class="stat-label">Precision</div>
-          <div class="stat-value" id="val-precision">83.99%</div>
-          <div style="font-size: 0.8rem; color: var(--emerald); margin-top: 0.3rem;">Reliable churn alerts</div>
+          <div class="stat-sub up">↑ Reliable churn alerts</div>
         </div>
         <div class="stat-card">
+          <div class="stat-icon cyan">📡</div>
+          <div class="stat-val" id="val-recall">92.35%</div>
           <div class="stat-label">Recall</div>
-          <div class="stat-value" id="val-recall">92.35%</div>
-          <div style="font-size: 0.8rem; color: var(--emerald); margin-top: 0.3rem;">Captures 92%+ of churners</div>
+          <div class="stat-sub up">↑ Captures 92%+ churners</div>
         </div>
         <div class="stat-card">
+          <div class="stat-icon green">⚖️</div>
+          <div class="stat-val" id="val-f1">87.97%</div>
           <div class="stat-label">F1 Score</div>
-          <div class="stat-value" id="val-f1">87.97%</div>
-          <div style="font-size: 0.8rem; color: var(--emerald); margin-top: 0.3rem;">Balanced performance</div>
+          <div class="stat-sub up">↑ Balanced performance</div>
         </div>
       </div>
 
-      <div class="glass-card">
-        <div class="card-title-bar">
-          <h2><span>🔬</span> Model Architecture Details</h2>
+      <div class="card">
+        <div class="card-header">
+          <h2><span class="card-icon">🔬</span> Model Architecture Details</h2>
           <button class="docs-btn" id="btn-refresh-metrics">🔄 Refresh</button>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
-          <div class="signals-box">
-            <h4><span>⚙️</span> Classifier Settings</h4>
-            <ul class="signal-items">
+        <div class="arch-cols">
+          <div class="arch-box">
+            <h4>⚙️ Classifier Settings</h4>
+            <ul class="signal-list">
               <li><strong>Model:</strong> Support Vector Classifier (SVC)</li>
-              <li><strong>Kernel:</strong> RBF Kernel</li>
+              <li><strong>Kernel:</strong> RBF (Radial Basis Function)</li>
               <li><strong>Class Balancing:</strong> Balanced Weights</li>
               <li><strong>Artifact:</strong> artifacts/models/model.pkl</li>
+              <li><strong>Preprocessor:</strong> artifacts/transform/preproccessor.pkl</li>
             </ul>
           </div>
-          <div class="signals-box">
-            <h4><span>📊</span> Top Drivers Impact</h4>
-            <ul class="signal-items">
-              <li><strong>Contract:</strong> Month-to-Month is primary churn risk.</li>
-              <li><strong>Satisfaction:</strong> Scores &le; 2 have >90% churn rate.</li>
+          <div class="arch-box">
+            <h4>📊 Top Feature Drivers</h4>
+            <ul class="signal-list">
+              <li><strong>Contract:</strong> Month-to-Month is the primary churn risk driver.</li>
+              <li><strong>Satisfaction:</strong> Scores ≤ 2 have &gt;90% churn rate.</li>
               <li><strong>Tenure:</strong> Early months require onboarding care.</li>
-              <li><strong>Pricing:</strong> Monthly spend impacts price sensitivity.</li>
+              <li><strong>Monthly Charge:</strong> High spend increases price sensitivity.</li>
+              <li><strong>Internet Type:</strong> Fiber Optic customers churn more frequently.</li>
             </ul>
           </div>
         </div>
       </div>
+
     </section>
 
   </main>
 
-  <!-- Footer -->
-  <footer>
-    <p>⚡ ChurnSense AI Studio | Production Retention Engine</p>
+  <footer class="footer">
+    <p>⚡ ChurnSense AI Studio · Production Retention Engine</p>
   </footer>
 
-  <script src="/static/js/app.js?v=3.1"></script>
+  <script src="/static/js/app.js?v=5.0"></script>
 </body>
 </html>

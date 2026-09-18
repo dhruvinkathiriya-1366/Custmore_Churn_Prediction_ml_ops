@@ -1,648 +1,401 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // =========================================================
-  // 0. Interactive Hexagon Grid Electric Lightning Hover Engine
-  // =========================================================
+  // ═══════════════════════════════════════════════════════════
+  // 0. LIGHTNING CANVAS — Electric Hex Grid with Mouse Effect
+  // ═══════════════════════════════════════════════════════════
   const canvas = document.getElementById("lightning-canvas");
-  
-  let mouseX = -9999;
-  let mouseY = -9999;
-  let isMouseOnScreen = false;
-  let lastMoveTime = performance.now();
-
-  window.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    isMouseOnScreen = true;
-    lastMoveTime = performance.now();
-  });
-
-  window.addEventListener("mouseenter", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    isMouseOnScreen = true;
-    lastMoveTime = performance.now();
-  });
-
-  window.addEventListener("mouseleave", () => {
-    isMouseOnScreen = false;
-    mouseX = -9999;
-    mouseY = -9999;
-  });
-
   if (canvas) {
     const ctx = canvas.getContext("2d");
-    let width = 0;
-    let height = 0;
-    let dpr = window.devicePixelRatio || 1;
+    let W = 0, H = 0, dpr = devicePixelRatio || 1;
+    let mouseX = -9999, mouseY = -9999, onScreen = false;
 
-    const hexRadius = 34; // Hexagon cell radius
-    const hexWidth = Math.sqrt(3) * hexRadius; // ~58.88px
-    const hexVertSpacing = 1.5 * hexRadius;   // 51px
-    const hoverRadius = 190; // Active interaction radius
+    const HEX_R    = 34;
+    const HEX_W    = Math.sqrt(3) * HEX_R;
+    const HEX_H    = 1.5 * HEX_R;
+    const HOVER_R  = 200;
 
-    let hexagons = [];
+    // Pre-build pointy-top hex vertices
+    const BASE_V = Array.from({length:6}, (_,i) => {
+      const a = Math.PI/6 + i*Math.PI/3;
+      return { x: HEX_R * Math.cos(a), y: HEX_R * Math.sin(a) };
+    });
 
-    // Pointy-topped hexagon base vertices relative to center
-    const baseVertices = [];
-    for (let i = 0; i < 6; i++) {
-      const angle = (Math.PI / 6) + (i * Math.PI) / 3;
-      baseVertices.push({
-        x: hexRadius * Math.cos(angle),
-        y: hexRadius * Math.sin(angle)
-      });
-    }
+    let hexes = [];
 
-    function initHexGrid() {
-      dpr = window.devicePixelRatio || 1;
-      width = window.innerWidth;
-      height = window.innerHeight;
-
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.scale(dpr, dpr);
-
-      hexagons = [];
-
-      const cols = Math.ceil(width / hexWidth) + 3;
-      const rows = Math.ceil(height / hexVertSpacing) + 3;
-
+    function buildGrid() {
+      dpr = devicePixelRatio || 1;
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width  = Math.floor(W * dpr);
+      canvas.height = Math.floor(H * dpr);
+      canvas.style.width  = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      hexes = [];
+      const cols = Math.ceil(W / HEX_W) + 3;
+      const rows = Math.ceil(H / HEX_H) + 3;
       for (let r = -1; r < rows; r++) {
-        const rowOffsetY = r * hexVertSpacing;
-        const colOffsetX = (r % 2 === 0 ? 0 : hexWidth / 2) - hexWidth;
-
+        const odd = (r & 1) === 1;
         for (let c = -1; c < cols; c++) {
-          const cx = colOffsetX + c * hexWidth;
-          const cy = rowOffsetY;
-
-          hexagons.push({
-            cx,
-            cy,
-            energy: 0
+          hexes.push({
+            cx: c * HEX_W + (odd ? HEX_W / 2 : 0),
+            cy: r * HEX_H,
+            e: 0
           });
         }
       }
     }
 
-    window.addEventListener("resize", initHexGrid);
-    initHexGrid();
+    window.addEventListener("resize",    buildGrid);
+    window.addEventListener("mousemove", e => { mouseX = e.clientX; mouseY = e.clientY; onScreen = true; });
+    window.addEventListener("mouseenter",e => { mouseX = e.clientX; mouseY = e.clientY; onScreen = true; });
+    window.addEventListener("mouseleave",() => { onScreen = false; mouseX = -9999; mouseY = -9999; });
+    buildGrid();
 
-    // Helper: draw single hexagon path
-    function buildHexPath(cx, cy, scale = 1.0) {
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const vx = cx + baseVertices[i].x * scale;
-        const vy = cy + baseVertices[i].y * scale;
-        if (i === 0) ctx.moveTo(vx, vy);
-        else ctx.lineTo(vx, vy);
-      }
-      ctx.closePath();
-    }
-
-    // Helper: draw high-voltage electric lightning bolt with perpendicular jitter
-    function drawElectricLightning(x1, y1, x2, y2, intensity = 1.0, color = "#00a6f4") {
-      const dx = x2 - x1;
-      const dy = y2 - y1;
+    // Draw a jagged electric bolt between two points
+    function bolt(x1, y1, x2, y2, intensity, color) {
+      const dx = x2-x1, dy = y2-y1;
       const len = Math.hypot(dx, dy);
-      if (len === 0) return;
-      
+      if (len < 1) return;
+      const px = -dy/len, py = dx/len;
       const steps = 5;
-      const perpX = -dy / len;
-      const perpY = dx / len;
-
       ctx.beginPath();
       ctx.moveTo(x1, y1);
-
       for (let s = 1; s < steps; s++) {
         const t = s / steps;
-        const jitter = (Math.random() - 0.5) * 5.0 * intensity;
-        const px = x1 + dx * t + perpX * jitter;
-        const py = y1 + dy * t + perpY * jitter;
-        ctx.lineTo(px, py);
+        const j = (Math.random() - 0.5) * 5.5 * intensity;
+        ctx.lineTo(x1 + dx*t + px*j, y1 + dy*t + py*j);
       }
-
       ctx.lineTo(x2, y2);
       ctx.strokeStyle = color;
-      ctx.lineWidth = 1.4 + intensity * 1.8;
-      ctx.shadowColor = "#00a6f4";
-      ctx.shadowBlur = 12 * intensity;
+      ctx.lineWidth   = 1.2 + intensity * 2.0;
+      ctx.shadowColor = "#0077fe";
+      ctx.shadowBlur  = 12 * intensity;
       ctx.stroke();
-
-      // White-hot lightning core for high energy
-      if (intensity > 0.45) {
+      // White-hot core
+      if (intensity > 0.42) {
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min((intensity - 0.45) * 2.2, 1)})`;
-        ctx.lineWidth = 1.1;
+        ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+        ctx.strokeStyle = `rgba(255,255,255,${Math.min((intensity-0.42)*2.4,1)})`;
+        ctx.lineWidth   = 1.0;
         ctx.shadowColor = "#ffffff";
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur  = 8;
         ctx.stroke();
       }
     }
 
-    let lastFrameTime = performance.now();
+    let lastT = performance.now();
 
-    function renderHexagonLightningEngine(timestamp) {
-      const dt = (timestamp - lastFrameTime) / 1000;
-      lastFrameTime = timestamp;
+    function frame(ts) {
+      ctx.clearRect(0, 0, W, H);
+      ctx.shadowBlur = 0;
 
-      ctx.clearRect(0, 0, width, height);
+      const active = [];
 
-      const activeHexagons = [];
-
-      // Update energy levels based on mouse hover
-      for (let i = 0; i < hexagons.length; i++) {
-        const hex = hexagons[i];
-
-        if (isMouseOnScreen) {
-          const dx = hex.cx - mouseX;
-          const dy = hex.cy - mouseY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < hoverRadius) {
-            const factor = Math.pow(1 - dist / hoverRadius, 1.6);
-            hex.energy = Math.max(hex.energy, factor);
-          }
+      // Energy update
+      for (const h of hexes) {
+        if (onScreen) {
+          const d = Math.hypot(h.cx - mouseX, h.cy - mouseY);
+          if (d < HOVER_R) h.e = Math.max(h.e, Math.pow(1 - d/HOVER_R, 1.7));
         }
-
-        // Smooth energy decay
-        hex.energy *= 0.89;
-        if (hex.energy < 0.005) hex.energy = 0;
-
-        if (hex.energy > 0.01) {
-          activeHexagons.push(hex);
-        }
+        h.e *= 0.88;
+        if (h.e < 0.004) h.e = 0;
+        if (h.e > 0.008) active.push(h);
       }
 
-      // -----------------------------------------------------
-      // Pass 1: Crisp subtle cyan lattice background
-      // -----------------------------------------------------
-      ctx.lineWidth = 0.9;
-      ctx.shadowBlur = 0;
-      ctx.strokeStyle = "rgba(2, 132, 199, 0.13)";
-
+      // ── Pass 1: faint blue lattice (always visible) ──
       ctx.beginPath();
-      for (let i = 0; i < hexagons.length; i++) {
-        const hex = hexagons[i];
+      ctx.lineWidth   = 0.7;
+      ctx.strokeStyle = "rgba(0,102,255,0.10)";
+      ctx.shadowBlur  = 0;
+      for (const h of hexes) {
         for (let v = 0; v < 6; v++) {
-          const vx = hex.cx + baseVertices[v].x;
-          const vy = hex.cy + baseVertices[v].y;
-          if (v === 0) ctx.moveTo(vx, vy);
-          else ctx.lineTo(vx, vy);
+          const vx = h.cx + BASE_V[v].x, vy = h.cy + BASE_V[v].y;
+          v === 0 ? ctx.moveTo(vx,vy) : ctx.lineTo(vx,vy);
         }
         ctx.closePath();
       }
       ctx.stroke();
 
-      // Subtle vertex micro-dots on lattice
-      ctx.fillStyle = "rgba(2, 132, 199, 0.22)";
-      for (let i = 0; i < hexagons.length; i += 2) {
-        const hex = hexagons[i];
-        for (let v = 0; v < 6; v++) {
-          const vx = hex.cx + baseVertices[v].x;
-          const vy = hex.cy + baseVertices[v].y;
-          ctx.fillRect(vx - 0.75, vy - 0.75, 1.5, 1.5);
-        }
+      // Subtle corner dots
+      ctx.fillStyle = "rgba(0,102,255,0.18)";
+      for (let i = 0; i < hexes.length; i+=2) {
+        const h = hexes[i];
+        for (const v of BASE_V) ctx.fillRect(h.cx+v.x-0.8, h.cy+v.y-0.8, 1.6, 1.6);
       }
 
-      // -----------------------------------------------------
-      // Pass 2: Glowing cyan/blue borders on hover
-      // -----------------------------------------------------
-      for (let i = 0; i < activeHexagons.length; i++) {
-        const hex = activeHexagons[i];
-        const energy = hex.energy;
-
-        buildHexPath(hex.cx, hex.cy, 1.0);
-
-        ctx.strokeStyle = `rgba(0, 119, 254, ${Math.min(0.3 + energy * 0.7, 0.95)})`;
-        ctx.lineWidth = 1.2 + energy * 2.0;
+      // ── Pass 2: glowing borders on hover ──
+      for (const h of active) {
+        ctx.beginPath();
+        for (let v = 0; v < 6; v++) {
+          const vx = h.cx + BASE_V[v].x, vy = h.cy + BASE_V[v].y;
+          v===0 ? ctx.moveTo(vx,vy) : ctx.lineTo(vx,vy);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = `rgba(0,119,254,${Math.min(0.25+h.e*0.75,0.95)})`;
+        ctx.lineWidth   = 1.0 + h.e * 2.2;
         ctx.shadowColor = "#00a6f4";
-        ctx.shadowBlur = energy * 16;
+        ctx.shadowBlur  = h.e * 18;
         ctx.stroke();
-
-        // White-hot border highlight for closest hexagons
-        if (energy > 0.5) {
-          ctx.strokeStyle = `rgba(255, 255, 255, ${(energy - 0.5) * 1.8})`;
-          ctx.lineWidth = 1.3;
+        if (h.e > 0.5) {
+          ctx.strokeStyle = `rgba(255,255,255,${(h.e-0.5)*1.6})`;
+          ctx.lineWidth   = 1.1;
           ctx.shadowColor = "#ffffff";
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur  = 10;
           ctx.stroke();
         }
       }
 
-      // -----------------------------------------------------
-      // Pass 3: Electric lightning surges along grid edges
-      // -----------------------------------------------------
-      if (activeHexagons.length > 0) {
-        for (let i = 0; i < activeHexagons.length; i++) {
-          const hex = activeHexagons[i];
-          if (hex.energy > 0.25) {
-            for (let e = 0; e < 6; e++) {
-              const v1 = baseVertices[e];
-              const v2 = baseVertices[(e + 1) % 6];
-              const x1 = hex.cx + v1.x;
-              const y1 = hex.cy + v1.y;
-              const x2 = hex.cx + v2.x;
-              const y2 = hex.cy + v2.y;
-
-              if (Math.random() < hex.energy * 0.75) {
-                drawElectricLightning(
-                  x1,
-                  y1,
-                  x2,
-                  y2,
-                  hex.energy,
-                  `rgba(0, 166, 244, ${Math.min(hex.energy * 1.3, 1)})`
-                );
-              }
-            }
-
-            // Glowing lightning vertex nodes
-            if (hex.energy > 0.38) {
-              for (let v = 0; v < 6; v++) {
-                const vx = hex.cx + baseVertices[v].x;
-                const vy = hex.cy + baseVertices[v].y;
-
-                if (Math.random() < 0.45) {
-                  ctx.beginPath();
-                  ctx.arc(vx, vy, 2.2 * hex.energy, 0, Math.PI * 2);
-                  ctx.fillStyle = "#ffffff";
-                  ctx.shadowColor = "#00a6f4";
-                  ctx.shadowBlur = 15;
-                  ctx.fill();
-                }
-              }
+      // ── Pass 3: electric lightning surges ──
+      ctx.shadowBlur = 0;
+      for (const h of active) {
+        if (h.e < 0.22) continue;
+        for (let e = 0; e < 6; e++) {
+          const v1 = BASE_V[e], v2 = BASE_V[(e+1)%6];
+          if (Math.random() < h.e * 0.72) {
+            bolt(
+              h.cx+v1.x, h.cy+v1.y,
+              h.cx+v2.x, h.cy+v2.y,
+              h.e,
+              `rgba(0,166,244,${Math.min(h.e*1.4,1)})`
+            );
+          }
+        }
+        // Glowing nodes
+        if (h.e > 0.36) {
+          for (const v of BASE_V) {
+            if (Math.random() < 0.42) {
+              ctx.beginPath();
+              ctx.arc(h.cx+v.x, h.cy+v.y, 2.4*h.e, 0, Math.PI*2);
+              ctx.fillStyle   = "#ffffff";
+              ctx.shadowColor = "#00a6f4";
+              ctx.shadowBlur  = 16;
+              ctx.fill();
             }
           }
+          ctx.shadowBlur = 0;
         }
       }
 
-      requestAnimationFrame(renderHexagonLightningEngine);
+      lastT = ts;
+      requestAnimationFrame(frame);
     }
-
-    requestAnimationFrame(renderHexagonLightningEngine);
+    requestAnimationFrame(frame);
   }
 
-  // =========================================
-  // 1. Tab Switching
-  // =========================================
-  const tabBtns = document.querySelectorAll(".tab-btn");
-  const tabPanels = document.querySelectorAll(".tab-panel");
-
-  tabBtns.forEach(btn => {
+  // ═══════════════════════════════════════════════════════════
+  // 1. TAB SWITCHING
+  // ═══════════════════════════════════════════════════════════
+  document.querySelectorAll(".nav-tab").forEach(btn => {
     btn.addEventListener("click", () => {
-      tabBtns.forEach(b => b.classList.remove("active"));
-      tabPanels.forEach(p => p.classList.remove("active"));
-
+      document.querySelectorAll(".nav-tab").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
       btn.classList.add("active");
-      const target = btn.getAttribute("data-target");
-      const panel = document.getElementById(target);
+      const panel = document.getElementById(btn.getAttribute("data-target"));
       if (panel) panel.classList.add("active");
     });
   });
 
-  // =========================================
-  // 2. Segmented Buttons Component
-  // =========================================
-  function setupSegmented(containerId, hiddenInputId) {
-    const container = document.getElementById(containerId);
-    const hiddenInput = document.getElementById(hiddenInputId);
-    if (!container || !hiddenInput) return;
-
-    const buttons = container.querySelectorAll(".segmented-btn");
-    buttons.forEach(btn => {
+  // ═══════════════════════════════════════════════════════════
+  // 2. SEGMENTED BUTTONS
+  // ═══════════════════════════════════════════════════════════
+  function setupSeg(groupId, hiddenId) {
+    const grp = document.getElementById(groupId);
+    const hid = document.getElementById(hiddenId);
+    if (!grp || !hid) return;
+    grp.querySelectorAll(".seg-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        buttons.forEach(b => b.classList.remove("active"));
+        grp.querySelectorAll(".seg-btn").forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        hiddenInput.value = btn.getAttribute("data-val");
+        hid.value = btn.dataset.val;
       });
     });
   }
-
-  function setSegmentedValue(containerId, hiddenInputId, val) {
-    const container = document.getElementById(containerId);
-    const hiddenInput = document.getElementById(hiddenInputId);
-    if (!container || !hiddenInput) return;
-
-    hiddenInput.value = val;
-    const buttons = container.querySelectorAll(".segmented-btn");
-    buttons.forEach(btn => {
-      if (btn.getAttribute("data-val") === val) {
-        btn.classList.add("active");
-      } else {
-        btn.classList.remove("active");
-      }
-    });
+  function setSegVal(groupId, hiddenId, val) {
+    const grp = document.getElementById(groupId);
+    const hid = document.getElementById(hiddenId);
+    if (!grp || !hid) return;
+    hid.value = val;
+    grp.querySelectorAll(".seg-btn").forEach(b =>
+      b.classList.toggle("active", b.dataset.val === val)
+    );
   }
+  setupSeg("contract-segmented",  "Contract");
+  setupSeg("internet-segmented",  "InternetType");
+  setupSeg("payment-segmented",   "PaymentMethod");
 
-  setupSegmented("contract-segmented", "Contract");
-  setupSegmented("internet-segmented", "InternetType");
-  setupSegmented("payment-segmented", "PaymentMethod");
+  // ═══════════════════════════════════════════════════════════
+  // 3. STAR RATING
+  // ═══════════════════════════════════════════════════════════
+  const SAT_LABELS = {1:"1/5 – Highly Dissatisfied 😡",2:"2/5 – Dissatisfied 😟",3:"3/5 – Neutral 😐",4:"4/5 – Satisfied 😊",5:"5/5 – Very Satisfied 😍"};
+  const satInput = document.getElementById("SatisfactionScore");
+  const satText  = document.getElementById("satisfaction-text");
+  const satGrp   = document.getElementById("satisfaction-rating");
 
-  // =========================================
-  // 3. Star Rating Component
-  // =========================================
-  const satisfactionLabels = {
-    1: "1 / 5 - Highly Dissatisfied 😡",
-    2: "2 / 5 - Dissatisfied 😟",
-    3: "3 / 5 - Neutral 😐",
-    4: "4 / 5 - Satisfied 😊",
-    5: "5 / 5 - Very Satisfied 😍"
-  };
-
-  const satisfactionContainer = document.getElementById("satisfaction-rating");
-  const satisfactionInput = document.getElementById("SatisfactionScore");
-  const satisfactionText = document.getElementById("satisfaction-text");
-
-  function setSatisfaction(score) {
-    if (!satisfactionInput) return;
-    satisfactionInput.value = score;
-    if (satisfactionText) satisfactionText.textContent = satisfactionLabels[score] || `${score} / 5`;
-
-    if (satisfactionContainer) {
-      const stars = satisfactionContainer.querySelectorAll(".rating-star-btn");
-      stars.forEach(s => {
-        const starScore = Number(s.getAttribute("data-score"));
-        if (starScore === Number(score)) {
-          s.classList.add("active");
-        } else {
-          s.classList.remove("active");
-        }
-      });
-    }
+  function setSat(score) {
+    if (!satInput) return;
+    satInput.value = score;
+    if (satText) satText.textContent = SAT_LABELS[score] || score + "/5";
+    satGrp?.querySelectorAll(".star-btn").forEach(b =>
+      b.classList.toggle("active", Number(b.dataset.score) === Number(score))
+    );
   }
+  satGrp?.querySelectorAll(".star-btn").forEach(b =>
+    b.addEventListener("click", () => setSat(Number(b.dataset.score)))
+  );
 
-  satisfactionContainer?.querySelectorAll(".rating-star-btn").forEach(star => {
-    star.addEventListener("click", () => {
-      const score = Number(star.getAttribute("data-score"));
-      setSatisfaction(score);
-    });
-  });
-
-  // =========================================
-  // 4. Linked Sliders & Inputs
-  // =========================================
-  const tenureRange = document.getElementById("tenure-range");
-  const tenureInput = document.getElementById("TenureinMonths");
+  // ═══════════════════════════════════════════════════════════
+  // 4. LINKED SLIDERS
+  // ═══════════════════════════════════════════════════════════
+  const tenureRange  = document.getElementById("tenure-range");
+  const tenureInput  = document.getElementById("TenureinMonths");
   const monthlyRange = document.getElementById("monthly-range");
   const monthlyInput = document.getElementById("MonthlyCharge");
-  const totalInput = document.getElementById("TotalCharges");
+  const totalInput   = document.getElementById("TotalCharges");
 
-  function autoCalcTotal() {
-    const tenure = parseFloat(tenureInput?.value) || 1;
-    const monthly = parseFloat(monthlyInput?.value) || 0;
-    if (totalInput) {
-      totalInput.value = (tenure * monthly).toFixed(2);
-    }
+  function calcTotal() {
+    const t = parseFloat(tenureInput?.value)  || 1;
+    const m = parseFloat(monthlyInput?.value) || 0;
+    if (totalInput) totalInput.value = (t * m).toFixed(2);
   }
+  tenureRange?.addEventListener("input",  e => { if(tenureInput)  tenureInput.value  = e.target.value; calcTotal(); });
+  tenureInput?.addEventListener("input",  e => { if(tenureRange)  tenureRange.value  = e.target.value; calcTotal(); });
+  monthlyRange?.addEventListener("input", e => { if(monthlyInput) monthlyInput.value = e.target.value; calcTotal(); });
+  monthlyInput?.addEventListener("input", e => { if(monthlyRange) monthlyRange.value = e.target.value; calcTotal(); });
 
-  tenureRange?.addEventListener("input", (e) => {
-    if (tenureInput) tenureInput.value = e.target.value;
-    autoCalcTotal();
-  });
-
-  tenureInput?.addEventListener("input", (e) => {
-    if (tenureRange) tenureRange.value = e.target.value;
-    autoCalcTotal();
-  });
-
-  monthlyRange?.addEventListener("input", (e) => {
-    if (monthlyInput) monthlyInput.value = e.target.value;
-    autoCalcTotal();
-  });
-
-  monthlyInput?.addEventListener("input", (e) => {
-    if (monthlyRange) monthlyRange.value = e.target.value;
-    autoCalcTotal();
-  });
-
-  // =========================================
-  // 5. Presets
-  // =========================================
-  const presets = {
-    highRisk: {
-      Contract: "Month-to-Month",
-      SatisfactionScore: 1,
-      TenureinMonths: 2,
-      MonthlyCharge: 92.5,
-      InternetType: "Fiber Optic",
-      PaymentMethod: "Bank Withdrawal"
-    },
-    loyal: {
-      Contract: "Two Year",
-      SatisfactionScore: 5,
-      TenureinMonths: 48,
-      MonthlyCharge: 65.0,
-      InternetType: "DSL",
-      PaymentMethod: "Credit Card"
-    },
-    newCustomer: {
-      Contract: "One Year",
-      SatisfactionScore: 4,
-      TenureinMonths: 6,
-      MonthlyCharge: 75.0,
-      InternetType: "Cable",
-      PaymentMethod: "Credit Card"
+  // ═══════════════════════════════════════════════════════════
+  // 5. PRESETS
+  // ═══════════════════════════════════════════════════════════
+  function applyPreset(d) {
+    if (d.Contract)       setSegVal("contract-segmented","Contract",d.Contract);
+    if (d.InternetType)   setSegVal("internet-segmented","InternetType",d.InternetType);
+    if (d.PaymentMethod)  setSegVal("payment-segmented","PaymentMethod",d.PaymentMethod);
+    if (d.SatisfactionScore) setSat(d.SatisfactionScore);
+    if (d.TenureinMonths !== undefined) {
+      if (tenureInput) tenureInput.value = d.TenureinMonths;
+      if (tenureRange) tenureRange.value = d.TenureinMonths;
     }
-  };
-
-  function applyPreset(data) {
-    if (data.Contract) setSegmentedValue("contract-segmented", "Contract", data.Contract);
-    if (data.InternetType) setSegmentedValue("internet-segmented", "InternetType", data.InternetType);
-    if (data.PaymentMethod) setSegmentedValue("payment-segmented", "PaymentMethod", data.PaymentMethod);
-    if (data.SatisfactionScore) setSatisfaction(data.SatisfactionScore);
-
-    if (data.TenureinMonths !== undefined) {
-      if (tenureInput) tenureInput.value = data.TenureinMonths;
-      if (tenureRange) tenureRange.value = data.TenureinMonths;
+    if (d.MonthlyCharge !== undefined) {
+      if (monthlyInput) monthlyInput.value = d.MonthlyCharge;
+      if (monthlyRange) monthlyRange.value = d.MonthlyCharge;
     }
-    if (data.MonthlyCharge !== undefined) {
-      if (monthlyInput) monthlyInput.value = data.MonthlyCharge;
-      if (monthlyRange) monthlyRange.value = data.MonthlyCharge;
-    }
-    autoCalcTotal();
+    calcTotal();
   }
+  document.getElementById("preset-high-risk")?.addEventListener("click", () => applyPreset({Contract:"Month-to-Month",SatisfactionScore:1,TenureinMonths:2,MonthlyCharge:92.5,InternetType:"Fiber Optic",PaymentMethod:"Bank Withdrawal"}));
+  document.getElementById("preset-loyal")?.addEventListener("click",     () => applyPreset({Contract:"Two Year",SatisfactionScore:5,TenureinMonths:48,MonthlyCharge:65,InternetType:"DSL",PaymentMethod:"Credit Card"}));
+  document.getElementById("preset-new")?.addEventListener("click",       () => applyPreset({Contract:"One Year",SatisfactionScore:4,TenureinMonths:6,MonthlyCharge:75,InternetType:"Cable",PaymentMethod:"Credit Card"}));
+  document.getElementById("preset-reset")?.addEventListener("click",     () => applyPreset({Contract:"Month-to-Month",SatisfactionScore:3,TenureinMonths:12,MonthlyCharge:70,InternetType:"Fiber Optic",PaymentMethod:"Bank Withdrawal"}));
 
-  document.getElementById("preset-high-risk")?.addEventListener("click", () => applyPreset(presets.highRisk));
-  document.getElementById("preset-loyal")?.addEventListener("click", () => applyPreset(presets.loyal));
-  document.getElementById("preset-new")?.addEventListener("click", () => applyPreset(presets.newCustomer));
-  document.getElementById("preset-reset")?.addEventListener("click", () => {
-    applyPreset({
-      Contract: "Month-to-Month",
-      SatisfactionScore: 3,
-      TenureinMonths: 12,
-      MonthlyCharge: 70.0,
-      InternetType: "Fiber Optic",
-      PaymentMethod: "Bank Withdrawal"
-    });
-  });
-
-  // =========================================
-  // 6. Form Submission & Real-time Prediction
-  // =========================================
-  const form = document.getElementById("prediction-form");
-  form?.addEventListener("submit", async (e) => {
+  // ═══════════════════════════════════════════════════════════
+  // 6. PREDICTION FORM
+  // ═══════════════════════════════════════════════════════════
+  document.getElementById("prediction-form")?.addEventListener("submit", async e => {
     e.preventDefault();
-
-    const submitBtn = document.getElementById("btn-predict");
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = `<span class="spinner"></span> Predicting...`;
-    submitBtn.disabled = true;
+    const btn  = document.getElementById("btn-predict");
+    const orig = btn.innerHTML;
+    btn.innerHTML = `<span class="spinner"></span> Analyzing...`;
+    btn.disabled  = true;
 
     try {
       const payload = {
-        Contract: document.getElementById("Contract").value,
-        SatisfactionScore: Number(document.getElementById("SatisfactionScore").value),
-        TenureinMonths: Number(document.getElementById("TenureinMonths").value),
-        MonthlyCharge: Number(document.getElementById("MonthlyCharge").value),
-        TotalCharges: Number(document.getElementById("TotalCharges").value),
-        InternetType: document.getElementById("InternetType").value,
-        PaymentMethod: document.getElementById("PaymentMethod").value
+        Contract:         document.getElementById("Contract").value,
+        SatisfactionScore:Number(document.getElementById("SatisfactionScore").value),
+        TenureinMonths:   Number(tenureInput.value),
+        MonthlyCharge:    Number(monthlyInput.value),
+        TotalCharges:     Number(totalInput.value),
+        InternetType:     document.getElementById("InternetType").value,
+        PaymentMethod:    document.getElementById("PaymentMethod").value
       };
 
-      const response = await fetch("/api/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch("/api/predict", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
         body: JSON.stringify(payload)
       });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.detail || "Prediction request failed");
-      }
-
-      const result = await response.json();
-      displayResult(result, payload);
+      if (!res.ok) throw new Error((await res.json()).detail || "Prediction failed");
+      renderResult(await res.json(), payload);
 
     } catch (err) {
       alert("Error: " + err.message);
     } finally {
-      submitBtn.innerHTML = originalText;
-      submitBtn.disabled = false;
+      btn.innerHTML = orig;
+      btn.disabled  = false;
     }
   });
 
-  function displayResult(result, inputData) {
+  function renderResult(result, input) {
     document.getElementById("results-placeholder").style.display = "none";
     const content = document.getElementById("results-content");
     content.style.display = "flex";
 
-    const hero = document.getElementById("verdict-hero");
-    const title = document.getElementById("verdict-title");
-    const sub = document.getElementById("verdict-sub");
-    const badge = document.getElementById("verdict-badge");
-    const meterFill = document.getElementById("meter-bar-fill");
-    const meterNum = document.getElementById("churn-percent-num");
-    const signalsList = document.getElementById("risk-signals-list");
-    const actionsList = document.getElementById("action-plan-list");
-
     const isChurn = result.prediction === 1;
-    const targetProb = result.churn_probability;
+    const prob    = result.churn_probability;
+    const risk    = result.risk_level;
 
-    animateNumber(meterNum, 0, targetProb, 800, "%");
-    meterFill.style.width = `${targetProb}%`;
+    // Verdict
+    const hero  = document.getElementById("verdict-hero");
+    const badge = document.getElementById("verdict-badge");
+    const title = document.getElementById("verdict-title");
+    const sub   = document.getElementById("verdict-sub");
 
-    if (isChurn) {
-      hero.className = "verdict-hero churn";
-      title.className = "verdict-big-title churn";
-      title.textContent = "High Churn Risk 🚨";
-      sub.textContent = "High probability of customer leaving the service";
-      badge.className = "verdict-badge high";
-      badge.textContent = `${result.risk_level.toUpperCase()} RISK`;
-      meterFill.style.background = "var(--rose)";
-    } else {
-      hero.className = "verdict-hero stay";
-      title.className = "verdict-big-title stay";
-      title.textContent = "Customer Likely to Stay 🛡️";
-      sub.textContent = "Customer profile shows strong loyalty indicators";
-      badge.className = "verdict-badge low";
-      badge.textContent = `${result.risk_level.toUpperCase()} RISK`;
-      meterFill.style.background = "var(--emerald)";
-    }
+    hero.className     = "verdict " + (isChurn ? "churn" : "stay");
+    badge.className    = "verdict-badge " + (risk==="High"?"high":risk==="Medium"?"medium":"low");
+    badge.textContent  = risk.toUpperCase() + " RISK";
+    title.textContent  = isChurn ? "High Churn Risk 🚨" : "Customer Likely to Stay 🛡️";
+    sub.textContent    = isChurn ? "Immediate intervention recommended." : "Strong loyalty indicators detected.";
 
-    signalsList.innerHTML = "";
-    const signals = [];
+    // Gauge
+    const fill = document.getElementById("meter-bar-fill");
+    const num  = document.getElementById("churn-percent-num");
+    fill.style.width      = prob + "%";
+    fill.style.background = isChurn
+      ? "linear-gradient(90deg,#f87171,#f43f5e)"
+      : "linear-gradient(90deg,#34d399,#10b981)";
+    animNum(num, 0, prob, 900, "%");
 
-    if (inputData.SatisfactionScore <= 2) {
-      signals.push(`🔴 <strong>Low Satisfaction Score (${inputData.SatisfactionScore}/5):</strong> Strong negative sentiment.`);
-    } else if (inputData.SatisfactionScore >= 4) {
-      signals.push(`🟢 <strong>High Satisfaction Score (${inputData.SatisfactionScore}/5):</strong> Customer feels well-served.`);
-    }
+    // Signals
+    const sigs = [];
+    if (input.SatisfactionScore <= 2) sigs.push(`🔴 <strong>Low Satisfaction (${input.SatisfactionScore}/5):</strong> Strong churn signal.`);
+    else if (input.SatisfactionScore >= 4) sigs.push(`🟢 <strong>High Satisfaction (${input.SatisfactionScore}/5):</strong> Customer feels valued.`);
+    if (input.Contract === "Month-to-Month") sigs.push(`🔴 <strong>Month-to-Month:</strong> No lock-in — high vulnerability.`);
+    else sigs.push(`🟢 <strong>${input.Contract}:</strong> Contract anchors the relationship.`);
+    if (input.TenureinMonths <= 6) sigs.push(`🟡 <strong>New (${input.TenureinMonths} mo):</strong> Fragile onboarding period.`);
+    else if (input.TenureinMonths >= 24) sigs.push(`🟢 <strong>Long-term (${input.TenureinMonths} mo):</strong> Proven loyalty.`);
+    if (input.MonthlyCharge >= 85) sigs.push(`🟡 <strong>High Spend ($${input.MonthlyCharge}):</strong> Price-sensitive customer.`);
+    document.getElementById("risk-signals-list").innerHTML = sigs.map(s=>`<li>${s}</li>`).join("");
 
-    if (inputData.Contract === "Month-to-Month") {
-      signals.push(`🔴 <strong>Month-to-Month Agreement:</strong> Zero lock-in creates high churn vulnerability.`);
-    } else {
-      signals.push(`🟢 <strong>Committed Contract (${inputData.Contract}):</strong> Contract duration strongly stabilizes customer relationship.`);
-    }
-
-    if (inputData.TenureinMonths <= 6) {
-      signals.push(`🟡 <strong>Early Stage (< 6 months):</strong> Fragile customer onboarding period.`);
-    } else if (inputData.TenureinMonths >= 24) {
-      signals.push(`🟢 <strong>Long-Term Customer (${inputData.TenureinMonths} mos):</strong> Proven product loyalty.`);
-    }
-
-    if (inputData.MonthlyCharge >= 85) {
-      signals.push(`🟡 <strong>High Monthly Spend ($${inputData.MonthlyCharge}):</strong> High sensitivity to competitor discounts.`);
-    }
-
-    signals.forEach(s => {
-      const li = document.createElement("li");
-      li.innerHTML = s;
-      signalsList.appendChild(li);
-    });
-
-    actionsList.innerHTML = "";
-    const actions = [];
-    if (isChurn) {
-      actions.push(`📞 <strong>Proactive Outreach:</strong> Contact customer within 24 hours to address satisfaction.`);
-      actions.push(`🎁 <strong>Contract Incentive:</strong> Offer a 15% discount on switching to a 1-year agreement.`);
-    } else {
-      actions.push(`✨ <strong>Loyalty Engagement:</strong> Send satisfaction appreciation perks or rewards.`);
-      actions.push(`🚀 <strong>Upsell Opportunity:</strong> Profile qualifies for speed upgrade or family bundles.`);
-    }
-
-    actions.forEach(a => {
-      const li = document.createElement("li");
-      li.innerHTML = a;
-      actionsList.appendChild(li);
-    });
+    const acts = isChurn
+      ? [`📞 <strong>Proactive Call:</strong> Reach out within 24h.`,
+         `🎁 <strong>Contract Incentive:</strong> Offer 15% off a 1-year plan.`,
+         `⭐ <strong>Personalised Bundle:</strong> Match an offer to their usage.`]
+      : [`✨ <strong>Loyalty Reward:</strong> Send appreciation perks.`,
+         `🚀 <strong>Upsell:</strong> Offer a speed upgrade or family bundle.`];
+    document.getElementById("action-plan-list").innerHTML = acts.map(a=>`<li>${a}</li>`).join("");
   }
 
-  function animateNumber(element, start, end, duration, suffix = "") {
-    const startTime = performance.now();
-    function update(time) {
-      const elapsed = time - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const current = (start + (end - start) * progress).toFixed(1);
-      element.textContent = `${current}${suffix}`;
-      if (progress < 1) {
-        requestAnimationFrame(update);
-      } else {
-        element.textContent = `${end.toFixed(1)}${suffix}`;
-      }
-    }
-    requestAnimationFrame(update);
+  function animNum(el, from, to, dur, suf) {
+    const t0 = performance.now();
+    (function step(t) {
+      const p = Math.min((t-t0)/dur, 1);
+      el.textContent = (from + (to-from)*p).toFixed(1) + suf;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = to.toFixed(1) + suf;
+    })(performance.now());
   }
 
-  // =========================================
-  // 7. Load Metrics from API
-  // =========================================
+  // ═══════════════════════════════════════════════════════════
+  // 7. LOAD METRICS
+  // ═══════════════════════════════════════════════════════════
   async function loadMetrics() {
     try {
       const res = await fetch("/api/metrics");
-      if (res.ok) {
-        const m = await res.json();
-        if (m.accuracy) document.getElementById("val-accuracy").textContent = (m.accuracy * 100).toFixed(2) + "%";
-        if (m.precision) document.getElementById("val-precision").textContent = (m.precision * 100).toFixed(2) + "%";
-        if (m.recall) document.getElementById("val-recall").textContent = (m.recall * 100).toFixed(2) + "%";
-        if (m.F1_score) document.getElementById("val-f1").textContent = (m.F1_score * 100).toFixed(2) + "%";
-      }
-    } catch (e) {}
+      if (!res.ok) return;
+      const m = await res.json();
+      if (m.accuracy)  document.getElementById("val-accuracy").textContent  = (m.accuracy*100).toFixed(2)+"%";
+      if (m.precision) document.getElementById("val-precision").textContent = (m.precision*100).toFixed(2)+"%";
+      if (m.recall)    document.getElementById("val-recall").textContent    = (m.recall*100).toFixed(2)+"%";
+      if (m.F1_score)  document.getElementById("val-f1").textContent        = (m.F1_score*100).toFixed(2)+"%";
+    } catch(e) {}
   }
-
   document.getElementById("btn-refresh-metrics")?.addEventListener("click", loadMetrics);
   loadMetrics();
 
